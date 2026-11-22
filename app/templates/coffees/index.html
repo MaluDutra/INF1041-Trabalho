@@ -8,7 +8,7 @@
 <ul class="coffee-grid">
   {% for coffee in coffees %}
   <li class="coffee-card">
-    <h2>{{ coffee.name }}</h2>
+    <h2><a href="{{ url_for('coffees.detail', coffee_id=coffee.id) }}">{{ coffee.name }}</a></h2>
     <p class="roaster">{{ coffee.roaster }}</p>
     <p class="origin">{{ coffee.origin }}</p>
   </li>

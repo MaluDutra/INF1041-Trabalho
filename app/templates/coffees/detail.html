@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}{{ coffee.name }} - Cafeteca{% endblock %}
+
+{% block content %}
+<article class="coffee-detail">
+  <header class="coffee-header">
+    <h1>{{ coffee.name }}</h1>
+    <p class="roaster">{{ coffee.roaster }}</p>
+    <p class="origin">{{ coffee.origin }}</p>
+  </header>
+
+  {% if coffee.photo_url %}
+  <img class="coffee-photo" src="{{ coffee.photo_url }}"
+       alt="Foto do café {{ coffee.name }}">
+  {% endif %}
+
+  <section>
+    <h2>Ficha técnica</h2>
+    <dl class="spec-sheet">
+      <dt>Origem</dt><dd>{{ coffee.origin }}</dd>
+      <dt>Produtor</dt><dd>{{ coffee.producer }}</dd>
+      <dt>Variedade</dt><dd>{{ coffee.variety }}</dd>
+      <dt>Processo</dt><dd>{{ coffee.process }}</dd>
+      <dt>Altitude</dt><dd>{{ coffee.altitude }}</dd>
+      <dt>Torra</dt><dd>{{ coffee.roast }}</dd>
+      <dt>Notas sensoriais</dt><dd>{{ coffee.sensory_notes }}</dd>
+    </dl>
+  </section>
+
+  <section>
+    <h2>História</h2>
+    <p>{{ coffee.story }}</p>
+  </section>
+
+  <section>
+    <h2>Recomendações de preparo</h2>
+    {% if coffee.brew_empty_message %}
+    <p>{{ coffee.brew_empty_message }}</p>
+    {% else %}
+    <ul class="brew-list">
+      {% for brew in coffee.brew_recommendations %}
+      <li class="brew-card">
+        <h3>{{ brew.method }}</h3>
+        <dl class="spec-sheet">
+          <dt>Proporção</dt><dd>{{ brew.ratio }}</dd>
+          <dt>Moagem</dt><dd>{{ brew.grind }}</dd>
+          <dt>Temperatura</dt><dd>{{ brew.temperature }}</dd>
+        </dl>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </section>
+
+  <p><a href="{{ url_for('coffees.index') }}">Voltar ao catálogo</a></p>
+</article>
+{% endblock %}

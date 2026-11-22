@@ -24,3 +24,6 @@ class InMemoryCoffeeRepository(CoffeeRepository):
 
     def list_all(self) -> list[Coffee]:
         return list(self._coffees.values())
+
+    def get_by_id(self, coffee_id: int) -> Coffee | None:
+        return self._coffees.get(coffee_id)

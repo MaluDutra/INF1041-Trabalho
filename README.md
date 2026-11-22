@@ -15,7 +15,9 @@ flask --app app.main run --debug  # sobe a aplicação em http://127.0.0.1:5000
 ```
 
 O `init-db` roda sobre um banco vazio: se o banco já tem cafés, nada é
-alterado. O arquivo do banco fica em `instance/cafeteca.db`.
+alterado. O arquivo do banco fica em `instance/cafeteca.db`. Se ele foi
+criado antes da issue 02 (schema antigo), apague o arquivo e rode o
+`init-db` de novo.
 
 ## Testes e linters
 

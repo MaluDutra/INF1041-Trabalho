@@ -50,3 +50,58 @@ body {
 .roaster {
   color: #6b4a33;
 }
+
+.coffee-card a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.coffee-card a:hover {
+  text-decoration: underline;
+}
+
+.coffee-header h1 {
+  margin-bottom: 0.2rem;
+}
+
+.coffee-photo {
+  display: block;
+  width: 100%;
+  max-width: 24rem;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+}
+
+.spec-sheet {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.3rem 1rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.spec-sheet dt {
+  font-weight: bold;
+}
+
+.spec-sheet dd {
+  margin: 0;
+}
+
+.brew-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.brew-card {
+  background: #fff;
+  border: 1px solid #e3d5c6;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+}
+
+.brew-card h3 {
+  margin: 0.3rem 0;
+}

@@ -40,3 +40,16 @@ def test_repository_assigns_an_id_to_the_stored_coffee():  # SCRUM-13
 
     assert stored.id is not None
     assert repository.list_all() == [stored]
+
+
+def test_repository_finds_a_stored_coffee_by_id():  # SCRUM-12
+    repository = InMemoryCoffeeRepository()
+    stored = repository.add(make_coffee("Sítio da Torre", "Café Lá"))
+
+    assert repository.get_by_id(stored.id) == stored
+
+
+def test_repository_returns_none_for_an_unknown_id():  # SCRUM-12
+    repository = InMemoryCoffeeRepository()
+
+    assert repository.get_by_id(42) is None

@@ -1,6 +1,6 @@
 # 01: Esqueleto: catálogo na página inicial
 
-**Status:** ready-for-agent
+**Status:** done
 
 **Jira:** SCRUM-13 (parcial), SCRUM-12 (parcial)
 **Histórias da spec:** 23 e 14 (parcial)
@@ -34,30 +34,30 @@ o padrão que os próximos tickets seguem.
 
 **Critérios de aceite:**
 
-- [ ] DADO QUE o catálogo tem cafés, QUANDO o visitante abre a página
+- [x] DADO QUE o catálogo tem cafés, QUANDO o visitante abre a página
       inicial, ENTÃO vê todos eles, com nome, torrefação e origem, sem
       digitar nada.
-- [ ] DADO QUE falta o nome, a torrefação ou a origem (ou o valor só tem
+- [x] DADO QUE falta o nome, a torrefação ou a origem (ou o valor só tem
       espaços), QUANDO o Café é criado, ENTÃO o domínio lança um erro de
       validação.
-- [ ] A normalização transforma "  Sítio DA Torre " em "sitio da torre"
+- [x] A normalização transforma "  Sítio DA Torre " em "sitio da torre"
       (teste de domínio).
-- [ ] DADO QUE já existe "Sítio da Torre" da torrefação "Café Lá", QUANDO
+- [x] DADO QUE já existe "Sítio da Torre" da torrefação "Café Lá", QUANDO
       se tenta gravar "sitio da torre" da "CAFÉ LA", ENTÃO o repositório
       recusa com erro de conflito. O fake e o SQLite se comportam igual
       (no SQLite, por uma restrição de unicidade).
-- [ ] O Café guarda a data de entrada no catálogo.
-- [ ] `SearchCoffees` com o termo vazio devolve o catálogo inteiro em
+- [x] O Café guarda a data de entrada no catálogo.
+- [x] `SearchCoffees` com o termo vazio devolve o catálogo inteiro em
       ordem alfabética do nome normalizado (teste com o fake, citando
       SCRUM-13).
-- [ ] A rota só converte a requisição em DTO, chama `execute()` e
+- [x] A rota só converte a requisição em DTO, chama `execute()` e
       renderiza o template. A ligação entre casos de uso e implementações
       concretas acontece só na composition root.
-- [ ] O comando de inicialização cria o banco e um seed mínimo (alguns
+- [x] O comando de inicialização cria o banco e um seed mínimo (alguns
       cafés), e a aplicação sobe com `flask --app app.main run`. Os dois
       comandos estão no README.
-- [ ] Os testes usam só fakes em memória (sem Flask, HTTP ou SQLite).
-- [ ] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
+- [x] Os testes usam só fakes em memória (sem Flask, HTTP ou SQLite).
+- [x] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
       passam.
 
 **Fora deste ticket:** termo de busca, filtros, ordenações, nota

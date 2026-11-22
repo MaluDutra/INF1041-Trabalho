@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Cafés - Cafeteca{% endblock %}
+
+{% block content %}
+<h1>Cafés</h1>
+{% if coffees %}
+<ul class="coffee-grid">
+  {% for coffee in coffees %}
+  <li class="coffee-card">
+    <h2>{{ coffee.name }}</h2>
+    <p class="roaster">{{ coffee.roaster }}</p>
+    <p class="origin">{{ coffee.origin }}</p>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>O catálogo ainda não tem cafés.</p>
+{% endif %}
+{% endblock %}

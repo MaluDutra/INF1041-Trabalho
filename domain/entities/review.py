@@ -1,6 +1,6 @@
 """Entidade Review."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 
 from domain.exceptions import ValidationError
@@ -34,6 +34,14 @@ class Review:
     def __post_init__(self) -> None:
         object.__setattr__(self, "rating", self._parse_rating(self.rating))
         object.__setattr__(self, "text", self._parse_text(self.text))
+
+    def edit(self, rating: int | None, text: str | None) -> "Review":
+        """Devolve o review com nota e texto novos, marcado como editado.
+
+        Vale a mesma validação da criação. Id, autor, café e data de
+        criação não mudam, e não há histórico de versões.
+        """
+        return replace(self, rating=rating, text=text, edited=True)
 
     @staticmethod
     def _parse_rating(value: int) -> int:

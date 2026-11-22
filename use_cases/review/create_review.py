@@ -2,7 +2,7 @@
 
 from domain.entities.review import Review
 from domain.exceptions import ConflictError, NotFoundError
-from use_cases.dtos import CreatedReviewDTO, CreateReviewInput
+from use_cases.dtos import CreateReviewInput, SavedReviewDTO
 from use_cases.ports.clock import Clock
 from use_cases.ports.coffee_repository import CoffeeRepository
 from use_cases.ports.review_repository import ReviewRepository
@@ -26,7 +26,7 @@ class CreateReview:
         self._coffee_repository = coffee_repository
         self._clock = clock
 
-    def execute(self, data: CreateReviewInput) -> CreatedReviewDTO:
+    def execute(self, data: CreateReviewInput) -> SavedReviewDTO:
         if self._coffee_repository.get_by_id(data.coffee_id) is None:
             raise NotFoundError("Café não encontrado.")
         review = Review(
@@ -41,7 +41,7 @@ class CreateReview:
         ):
             raise ConflictError("Você já avaliou este café.")
         stored = self._review_repository.add(review)
-        return CreatedReviewDTO(
+        return SavedReviewDTO(
             id=stored.id,
             rating=stored.rating,
             text=stored.text,

@@ -7,6 +7,7 @@ from use_cases.coffee.get_coffee_details import GetCoffeeDetails
 from use_cases.coffee.search_coffees import SearchCoffees
 
 OPEN_FORM_MARKER = "avaliar"
+OPEN_EDIT_MARKER = "editar"
 
 
 def create_coffee_blueprint(
@@ -25,6 +26,7 @@ def create_coffee_blueprint(
             get_coffee_details,
             coffee_id,
             open_form=request.args.get(OPEN_FORM_MARKER) == "1",
+            open_edit=request.args.get(OPEN_EDIT_MARKER) == "1",
         )
 
     return blueprint

@@ -14,13 +14,15 @@ def render_coffee_page(
     *,
     status: int = 200,
     open_form: bool = False,
+    open_edit: bool = False,
     review_form: dict | None = None,
     review_error: str | None = None,
 ) -> tuple[str, int]:
     """Monta a página do café (ou o 404 se ele não existir).
 
-    ``open_form`` abre o formulário de review; um erro de review também
-    o abre e devolve os valores digitados em ``review_form``.
+    ``open_form`` abre o formulário de review e ``open_edit`` o de edição
+    do review próprio. Um erro de review abre o formulário de criação,
+    e ``review_form`` devolve os valores digitados.
     """
     current_user = g.get("current_user")
     try:
@@ -34,6 +36,7 @@ def render_coffee_page(
         coffee=present_details(details),
         rating_scale=RATING_SCALE,
         open_form=open_form or review_error is not None,
+        open_edit=open_edit,
         review_form=review_form or {},
         review_error=review_error,
     )

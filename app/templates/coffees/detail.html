@@ -74,7 +74,33 @@
     {% endif %}
 
     {% if coffee.user_has_reviewed %}
-    <p><a class="button" href="#minha-avaliacao">Editar minha avaliação</a></p>
+    {% set own = coffee.own_review %}
+    {% set values = review_form if review_form else
+         {'rating': own.rating|string, 'text': own.text or ''} %}
+    <details id="editar" class="review-form-box"
+             {% if open_edit %}open{% endif %}>
+      <summary class="button">Editar minha avaliação</summary>
+      <form method="post"
+            action="{{ url_for('reviews.edit', coffee_id=coffee.id, review_id=own.id) }}"
+            class="form">
+        <fieldset class="rating-field">
+          <legend>Nota</legend>
+          {% for value in rating_scale %}
+          <label>
+            <input type="radio" name="rating" value="{{ value }}" required
+                   {% if values.get('rating') == value|string %}checked{% endif %}>
+            {{ value }}
+          </label>
+          {% endfor %}
+        </fieldset>
+
+        <label for="edit-text">Texto (opcional)</label>
+        <textarea id="edit-text" name="text" rows="4">{{ values.get('text', '') }}</textarea>
+        <p class="hint">Até 1000 caracteres.</p>
+
+        <button type="submit">Salvar alterações</button>
+      </form>
+    </details>
     {% elif current_user %}
     <details id="avaliar" class="review-form-box"
              {% if open_form %}open{% endif %}>
@@ -122,10 +148,22 @@
           <span class="review-rating">{{ review.rating_label }}</span>
           <span class="review-author">{{ review.author_name }}</span>
           <span class="review-date">{{ review.date }}</span>
+          {% if review.edited %}<span class="review-edited">editado</span>{% endif %}
           {% if review.is_own %}<span class="review-badge">Sua avaliação</span>{% endif %}
         </p>
         {% if review.text %}
         <p class="review-text">{{ review.text }}</p>
+        {% endif %}
+        {% if review.is_own %}
+        <details class="review-delete">
+          <summary class="button button-danger">Excluir</summary>
+          <form method="post"
+                action="{{ url_for('reviews.delete', coffee_id=coffee.id, review_id=review.id) }}">
+            <p>Excluir sua avaliação é definitivo e não pode ser desfeito.</p>
+            <button type="submit" class="button-danger">Confirmar exclusão</button>
+            <p class="hint">Para cancelar, feche este aviso clicando em "Excluir" de novo.</p>
+          </form>
+        </details>
         {% endif %}
       </li>
       {% endfor %}

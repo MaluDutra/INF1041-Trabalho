@@ -21,12 +21,14 @@ class BrewRecommendationView:
 
 @dataclass(frozen=True)
 class ReviewView:
+    id: int
     rating: int
     rating_label: str
     author_name: str
     date: str
     text: str | None
     is_own: bool
+    edited: bool
 
 
 @dataclass(frozen=True)
@@ -64,9 +66,11 @@ class CoffeeDetailsView:
     reviews: tuple[ReviewView, ...]
     reviews_empty_message: str | None
     user_has_reviewed: bool
+    own_review: ReviewView | None
 
 
 def present_details(details: CoffeeDetailsDTO) -> CoffeeDetailsView:
+    reviews = tuple(_present_review(review) for review in details.reviews)
     return CoffeeDetailsView(
         id=details.id,
         name=details.name,
@@ -93,9 +97,10 @@ def present_details(details: CoffeeDetailsDTO) -> CoffeeDetailsView:
             None if details.brew_recommendations else NOT_INFORMED
         ),
         rating=_present_rating(details.rating),
-        reviews=tuple(_present_review(review) for review in details.reviews),
+        reviews=reviews,
         reviews_empty_message=None if details.reviews else NO_REVIEWS,
         user_has_reviewed=details.user_has_reviewed,
+        own_review=next((r for r in reviews if r.is_own), None),
     )
 
 
@@ -125,12 +130,14 @@ def _rating_summary(rating: CoffeeRatingDTO) -> str:
 
 def _present_review(review: ReviewDTO) -> ReviewView:
     return ReviewView(
+        id=review.id,
         rating=review.rating,
         rating_label=f"{review.rating} de {max(RATING_SCALE)}",
         author_name=review.author_name,
         date=format_date(review.created_at),
         text=review.text,
         is_own=review.is_own,
+        edited=review.edited,
     )
 
 

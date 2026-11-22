@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 
 from domain.entities.review import Review
-from domain.exceptions import ConflictError
+from domain.exceptions import ConflictError, NotFoundError
 from infra.db.database import connect
 from use_cases.ports.review_repository import ReviewRepository
 
@@ -41,6 +41,14 @@ class SqliteReviewRepository(ReviewRepository):
             raise ConflictError("Você já avaliou este café.") from error
         return replace(review, id=cursor.lastrowid)
 
+    def get_by_id(self, review_id: int) -> Review | None:
+        with closing(connect(self._db_path)) as connection:
+            row = connection.execute(
+                f"SELECT {_COLUMNS} FROM reviews WHERE id = ?",
+                (review_id,),
+            ).fetchone()
+        return None if row is None else self._to_review(row)
+
     def get_by_author_and_coffee(
         self, author_id: int, coffee_id: int
     ) -> Review | None:
@@ -67,6 +75,25 @@ class SqliteReviewRepository(ReviewRepository):
                 (coffee_id,),
             ).fetchall()
         return [row["rating"] for row in rows]
+
+    def update(self, review: Review) -> Review:
+        with closing(connect(self._db_path)) as connection, connection:
+            cursor = connection.execute(
+                "UPDATE reviews SET rating = ?, text = ?, edited = ?"
+                " WHERE id = ?",
+                (review.rating, review.text, int(review.edited), review.id),
+            )
+        if cursor.rowcount == 0:
+            raise NotFoundError("Avaliação não encontrada.")
+        return review
+
+    def delete(self, review_id: int) -> None:
+        with closing(connect(self._db_path)) as connection, connection:
+            cursor = connection.execute(
+                "DELETE FROM reviews WHERE id = ?", (review_id,)
+            )
+        if cursor.rowcount == 0:
+            raise NotFoundError("Avaliação não encontrada.")
 
     @staticmethod
     def _to_review(row: sqlite3.Row) -> Review:

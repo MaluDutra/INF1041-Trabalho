@@ -246,6 +246,24 @@ body {
   font-size: 0.8rem;
 }
 
+.review-edited {
+  color: #6b4a33;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.review-delete {
+  margin-top: 0.5rem;
+}
+
+.review-delete summary {
+  list-style: none;
+}
+
+.button-danger {
+  background: #7a1712;
+}
+
 .rating-average {
   margin: 0.2rem 0 0.8rem;
   font-size: 1.4rem;

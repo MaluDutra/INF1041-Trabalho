@@ -1,6 +1,6 @@
 # 07: Editar e excluir o próprio review
 
-**Status:** ready-for-agent
+**Status:** done
 
 **Jira:** SCRUM-14, SCRUM-19
 **Histórias da spec:** 49 (botão de edição), 51 a 54 e 67 (edição e
@@ -27,27 +27,27 @@ mudança na hora.
 
 **Critérios de aceite:**
 
-- [ ] DADO QUE o usuário tem um review com nota 3, QUANDO o edita para
+- [x] DADO QUE o usuário tem um review com nota 3, QUANDO o edita para
       nota 5 com texto novo, ENTÃO a lista mostra a nota 5, o texto novo,
       a data original e o selo "editado".
-- [ ] A edição recusa nota fora de 1 a 5 e texto com mais de 1000
+- [x] A edição recusa nota fora de 1 a 5 e texto com mais de 1000
       caracteres, com a mesma mensagem da criação. Um texto só com
       espaços vira "sem texto".
-- [ ] DADO QUE o usuário clica em "Excluir", QUANDO confirma, ENTÃO o
+- [x] DADO QUE o usuário clica em "Excluir", QUANDO confirma, ENTÃO o
       review some da lista e o botão volta a ser "Avaliar". Se cancelar,
       nada muda.
-- [ ] DADO QUE o review é de outra pessoa, QUANDO alguém tenta editá-lo
+- [x] DADO QUE o review é de outra pessoa, QUANDO alguém tenta editá-lo
       ou excluí-lo (por exemplo, forjando o POST), ENTÃO recebe 403 e o
       review não muda.
-- [ ] Editar ou excluir um review inexistente responde 404.
-- [ ] DADO QUE o café tem as notas [5, 3], QUANDO o 3 é editado para 5,
+- [x] Editar ou excluir um review inexistente responde 404.
+- [x] DADO QUE o café tem as notas [5, 3], QUANDO o 3 é editado para 5,
       ENTÃO a nota agregada passa de "4,0" para "5,0". QUANDO um dos
       reviews é excluído, ENTÃO a quantidade cai para 1 e o histograma
       acompanha.
-- [ ] Testes de `UpdateReview` e `DeleteReview`, citando SCRUM-14, só com
+- [x] Testes de `UpdateReview` e `DeleteReview`, citando SCRUM-14, só com
       fakes: edição válida, data mantida, marcador ligado, edição
       inválida, review de outra pessoa (editar e excluir), review
       inexistente e nota agregada recalculada depois de editar e de
       excluir (citando também SCRUM-19).
-- [ ] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
+- [x] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
       passam.

@@ -15,6 +15,10 @@ class ReviewRepository(ABC):
         """
 
     @abstractmethod
+    def get_by_id(self, review_id: int) -> Review | None:
+        """Devolve o review com esse id, ou ``None``."""
+
+    @abstractmethod
     def get_by_author_and_coffee(
         self, author_id: int, coffee_id: int
     ) -> Review | None:
@@ -27,3 +31,18 @@ class ReviewRepository(ABC):
     @abstractmethod
     def list_ratings_by_coffee(self, coffee_id: int) -> list[int]:
         """Devolve as notas dos reviews do café, sem ordem garantida."""
+
+    @abstractmethod
+    def update(self, review: Review) -> Review:
+        """Grava nota, texto e marcador de editado de um review já salvo.
+
+        A data de criação, o autor e o café não mudam. Lança
+        ``NotFoundError`` se o id não existe.
+        """
+
+    @abstractmethod
+    def delete(self, review_id: int) -> None:
+        """Remove o review, liberando o autor para avaliar de novo.
+
+        Lança ``NotFoundError`` se o id não existe.
+        """

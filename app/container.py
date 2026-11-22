@@ -15,6 +15,8 @@ from infra.security.werkzeug_password_hasher import WerkzeugPasswordHasher
 from use_cases.coffee.get_coffee_details import GetCoffeeDetails
 from use_cases.coffee.search_coffees import SearchCoffees
 from use_cases.review.create_review import CreateReview
+from use_cases.review.delete_review import DeleteReview
+from use_cases.review.update_review import UpdateReview
 from use_cases.user.authenticate_user import AuthenticateUser
 from use_cases.user.get_user import GetUser
 from use_cases.user.register_user import RegisterUser
@@ -28,6 +30,8 @@ class Container:
     authenticate_user: AuthenticateUser
     get_user: GetUser
     create_review: CreateReview
+    update_review: UpdateReview
+    delete_review: DeleteReview
 
 
 def build_container(db_path: str | Path) -> Container:
@@ -47,4 +51,6 @@ def build_container(db_path: str | Path) -> Container:
         create_review=CreateReview(
             review_repository, coffee_repository, clock
         ),
+        update_review=UpdateReview(review_repository),
+        delete_review=DeleteReview(review_repository),
     )

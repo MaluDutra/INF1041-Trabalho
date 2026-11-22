@@ -3,7 +3,7 @@
 from dataclasses import replace
 
 from domain.entities.review import Review
-from domain.exceptions import ConflictError
+from domain.exceptions import ConflictError, NotFoundError
 from use_cases.ports.review_repository import ReviewRepository
 
 
@@ -19,6 +19,9 @@ class InMemoryReviewRepository(ReviewRepository):
         self._reviews[self._next_id] = stored
         self._next_id += 1
         return stored
+
+    def get_by_id(self, review_id: int) -> Review | None:
+        return self._reviews.get(review_id)
 
     def get_by_author_and_coffee(
         self, author_id: int, coffee_id: int
@@ -37,3 +40,14 @@ class InMemoryReviewRepository(ReviewRepository):
 
     def list_ratings_by_coffee(self, coffee_id: int) -> list[int]:
         return [review.rating for review in self.list_by_coffee(coffee_id)]
+
+    def update(self, review: Review) -> Review:
+        if review.id not in self._reviews:
+            raise NotFoundError("Avaliação não encontrada.")
+        self._reviews[review.id] = review
+        return review
+
+    def delete(self, review_id: int) -> None:
+        if review_id not in self._reviews:
+            raise NotFoundError("Avaliação não encontrada.")
+        del self._reviews[review_id]

@@ -41,7 +41,10 @@ def create_app(config: dict | None = None) -> Flask:
 
     app.register_blueprint(
         create_review_blueprint(
-            container.create_review, container.get_coffee_details
+            container.create_review,
+            container.update_review,
+            container.delete_review,
+            container.get_coffee_details,
         )
     )
 

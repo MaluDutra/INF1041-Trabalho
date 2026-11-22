@@ -132,11 +132,31 @@ class CreateReviewInput:
 
 
 @dataclass(frozen=True)
-class CreatedReviewDTO:
-    """Review recém-criado, como o caso de uso o devolve."""
+class SavedReviewDTO:
+    """Review criado ou editado, como o caso de uso o devolve."""
 
     id: int
     rating: int
     text: str | None
     created_at: datetime
     edited: bool
+
+
+@dataclass(frozen=True)
+class UpdateReviewInput:
+    """Dados do formulário de edição; ``rating`` é ``None`` se faltou."""
+
+    user_id: int
+    coffee_id: int
+    review_id: int
+    rating: int | None
+    text: str | None
+
+
+@dataclass(frozen=True)
+class DeleteReviewInput:
+    """Pedido de exclusão do review de um café."""
+
+    user_id: int
+    coffee_id: int
+    review_id: int

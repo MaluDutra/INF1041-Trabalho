@@ -1,11 +1,14 @@
 """Rotas do catálogo, com Flask e SQLite temporário (não é caso de uso)."""
 
-from datetime import date
+import re
+from datetime import date, datetime
 
 import pytest
 
 from app.main import create_app
 from domain.entities.coffee import Coffee
+from domain.entities.review import Review
+from domain.entities.user import User
 from domain.value_objects.brew_recommendation import BrewRecommendation
 from domain.value_objects.origin import Origin
 from domain.value_objects.process import Process
@@ -15,6 +18,10 @@ from infra.db.database import connect, init_schema
 from infra.repositories.coffee_repository_sqlite import (
     SqliteCoffeeRepository,
 )
+from infra.repositories.review_repository_sqlite import (
+    SqliteReviewRepository,
+)
+from infra.repositories.user_repository_sqlite import SqliteUserRepository
 
 
 @pytest.fixture
@@ -201,3 +208,138 @@ def test_home_blank_term_lists_whole_catalog_without_warning(
     assert "Blend" in html
     assert "caracteres" not in html
     assert "Nenhum café encontrado" not in html
+
+
+def add_review(tmp_path, coffee, *ratings):
+    """Grava um review por nota, cada um de um usuário novo."""
+    db_path = tmp_path / "routes.db"
+    users = SqliteUserRepository(db_path)
+    reviews = SqliteReviewRepository(db_path)
+    for number, rating in enumerate(ratings, start=1):
+        email = f"ana{number}-{coffee.id}@x.com"
+        user = users.add(User(f"Ana{number}", email, "h"))
+        reviews.add(
+            Review(
+                author_id=user.id,
+                coffee_id=coffee.id,
+                rating=rating,
+                text=None,
+                created_at=datetime(2026, 3, 10, 14, 30),
+            )
+        )
+
+
+def test_home_cards_show_the_aggregate_rating(
+    client, repository, tmp_path
+):  # SCRUM-13
+    rated = add_full_coffee(repository)
+    add_bare_coffee(repository)
+    add_review(tmp_path, rated, 5, 4)
+
+    html = client.get("/").get_data(as_text=True)
+
+    assert "4,5 ★ · 2 avaliações" in html
+    assert "Sem avaliações" in html
+
+
+def add_named_coffee(repository, name, added_at=date(2026, 1, 15)):
+    return repository.add(
+        Coffee(
+            name=name,
+            roaster="Café Lá",
+            origin=Origin.BRAZIL,
+            added_at=added_at,
+        )
+    )
+
+
+def card_order(html, *names):
+    return sorted(names, key=html.index)
+
+
+def test_home_sorts_by_best_rated_by_default(
+    client, repository, tmp_path
+):  # SCRUM-13
+    add_review(tmp_path, add_named_coffee(repository, "Abacaxi"), 3)
+    add_review(tmp_path, add_named_coffee(repository, "Zebra"), 5)
+
+    html = client.get("/").get_data(as_text=True)
+
+    assert card_order(html, "Abacaxi", "Zebra") == ["Zebra", "Abacaxi"]
+
+
+def test_home_sorts_by_the_chosen_option_and_term(
+    client, repository, tmp_path
+):  # SCRUM-13
+    add_review(tmp_path, add_named_coffee(repository, "Bourbon A"), 5)
+    add_review(tmp_path, add_named_coffee(repository, "Bourbon B"), 3, 3, 3)
+    add_named_coffee(repository, "Geisha")
+
+    html = client.get(
+        "/", query_string={"q": "bourbon", "ordenar": "mais-avaliados"}
+    ).get_data(as_text=True)
+
+    assert card_order(html, "Bourbon A", "Bourbon B") == [
+        "Bourbon B",
+        "Bourbon A",
+    ]
+    assert "Geisha" not in html
+
+
+def test_home_sorts_by_most_recent(client, repository):  # SCRUM-13
+    add_named_coffee(repository, "Antigo", date(2026, 1, 1))
+    add_named_coffee(repository, "Novo", date(2026, 6, 1))
+
+    html = client.get("/?ordenar=mais-recentes").get_data(as_text=True)
+
+    assert card_order(html, "Antigo", "Novo") == ["Novo", "Antigo"]
+
+
+def selected_options(html):
+    return re.findall(r'<option value="([^"]+)" selected>', html)
+
+
+def test_home_lists_the_sort_options_with_the_default_marked(
+    client,
+):  # SCRUM-13
+    html = client.get("/").get_data(as_text=True)
+
+    for label in ["Melhor avaliados", "Mais avaliados", "Mais recentes"]:
+        assert label in html
+    assert 'name="ordenar"' in html
+    assert selected_options(html) == ["melhor-avaliados"]
+
+
+def test_home_keeps_the_chosen_sort_marked(client, repository):  # SCRUM-13
+    add_named_coffee(repository, "Bourbon")
+
+    for query in [
+        "/?ordenar=mais-recentes",
+        "/?q=bourbon&ordenar=mais-recentes",
+    ]:
+        html = client.get(query).get_data(as_text=True)
+
+        assert selected_options(html) == ["mais-recentes"]
+
+
+def test_home_keeps_the_chosen_sort_when_the_term_is_short(client):
+    # SCRUM-13
+    html = client.get("/?q=a&ordenar=mais-avaliados").get_data(as_text=True)
+
+    assert "pelo menos 2 caracteres" in html
+    assert selected_options(html) == ["mais-avaliados"]
+
+
+def test_home_unknown_sort_falls_back_to_the_default(
+    client, repository, tmp_path
+):  # SCRUM-13
+    add_review(tmp_path, add_named_coffee(repository, "Abacaxi"), 3)
+    add_review(tmp_path, add_named_coffee(repository, "Zebra"), 5)
+
+    response = client.get("/?ordenar=<script>")
+
+    html = response.get_data(as_text=True)
+    assert response.status_code == 200
+    assert card_order(html, "Abacaxi", "Zebra") == ["Zebra", "Abacaxi"]
+    assert selected_options(html) == ["melhor-avaliados"]
+    assert "<script>" not in html

@@ -37,14 +37,15 @@ def sqlite_db(tmp_path):
     connection.close()
     SqliteUserRepository(path).add(User("Ana", "ana@x.com", "h"))
     SqliteUserRepository(path).add(User("Bia", "bia@x.com", "h"))
-    SqliteCoffeeRepository(path).add(
-        Coffee(
-            name="Blend",
-            roaster="Café Lá",
-            origin=Origin.BRAZIL,
-            added_at=date(2026, 1, 15),
+    for name in ("Blend", "Bourbon", "Geisha"):
+        SqliteCoffeeRepository(path).add(
+            Coffee(
+                name=name,
+                roaster="Café Lá",
+                origin=Origin.BRAZIL,
+                added_at=date(2026, 1, 15),
+            )
         )
-    )
     return path
 
 
@@ -137,3 +138,42 @@ def test_list_by_author_returns_only_that_authors_reviews(repository, stored):
     assert repository.list_by_author(1) == [stored]
     assert repository.list_by_author(2) == [other]
     assert repository.list_by_author(99) == []
+
+
+def test_list_ratings_by_coffees_groups_ratings_in_one_call(repository):
+    # SCRUM-13: notas de vários cafés de uma vez, sem N+1
+    for author, coffee, rating in [(1, 1, 5), (2, 1, 4), (1, 2, 3)]:
+        repository.add(
+            Review(
+                author_id=author,
+                coffee_id=coffee,
+                rating=rating,
+                text=None,
+                created_at=NOW,
+            )
+        )
+
+    grouped = repository.list_ratings_by_coffees([1, 2, 3])
+
+    assert sorted(grouped[1]) == [4, 5]
+    assert grouped[2] == [3]
+    assert grouped.get(3, []) == []
+
+
+def test_list_ratings_by_coffees_ignores_coffees_not_requested(repository):
+    # SCRUM-13
+    repository.add(
+        Review(author_id=1, coffee_id=1, rating=5, text=None, created_at=NOW)
+    )
+    repository.add(
+        Review(author_id=1, coffee_id=2, rating=2, text=None, created_at=NOW)
+    )
+
+    grouped = repository.list_ratings_by_coffees([2])
+
+    assert grouped == {2: [2]}
+
+
+def test_list_ratings_by_coffees_without_ids_returns_nothing(repository):
+    # SCRUM-13
+    assert repository.list_ratings_by_coffees([]) == {}

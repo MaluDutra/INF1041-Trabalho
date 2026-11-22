@@ -1,5 +1,6 @@
 """Fake em memória do ReviewRepository, reaproveitado pelos testes."""
 
+from collections.abc import Collection
 from dataclasses import replace
 
 from domain.entities.review import Review
@@ -47,6 +48,15 @@ class InMemoryReviewRepository(ReviewRepository):
 
     def list_ratings_by_coffee(self, coffee_id: int) -> list[int]:
         return [review.rating for review in self.list_by_coffee(coffee_id)]
+
+    def list_ratings_by_coffees(
+        self, coffee_ids: Collection[int]
+    ) -> dict[int, list[int]]:
+        grouped: dict[int, list[int]] = {}
+        for review in self._reviews.values():
+            if review.coffee_id in coffee_ids:
+                grouped.setdefault(review.coffee_id, []).append(review.rating)
+        return grouped
 
     def update(self, review: Review) -> Review:
         if review.id not in self._reviews:

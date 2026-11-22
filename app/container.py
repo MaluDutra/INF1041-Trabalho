@@ -14,6 +14,10 @@ from infra.repositories.user_repository_sqlite import SqliteUserRepository
 from infra.security.werkzeug_password_hasher import WerkzeugPasswordHasher
 from use_cases.coffee.get_coffee_details import GetCoffeeDetails
 from use_cases.coffee.search_coffees import SearchCoffees
+from use_cases.coffee.search_sorting import (
+    DEFAULT_SORT_STRATEGIES,
+    SortStrategy,
+)
 from use_cases.review.create_review import CreateReview
 from use_cases.review.delete_review import DeleteReview
 from use_cases.review.list_user_reviews import ListUserReviews
@@ -26,6 +30,7 @@ from use_cases.user.register_user import RegisterUser
 @dataclass(frozen=True)
 class Container:
     search_coffees: SearchCoffees
+    sort_strategies: tuple[SortStrategy, ...]
     get_coffee_details: GetCoffeeDetails
     register_user: RegisterUser
     authenticate_user: AuthenticateUser
@@ -42,8 +47,14 @@ def build_container(db_path: str | Path) -> Container:
     review_repository = SqliteReviewRepository(db_path)
     password_hasher = WerkzeugPasswordHasher()
     clock = SystemClock()
+    sort_strategies = DEFAULT_SORT_STRATEGIES
     return Container(
-        search_coffees=SearchCoffees(coffee_repository),
+        search_coffees=SearchCoffees(
+            coffee_repository,
+            review_repository,
+            sort_strategies=sort_strategies,
+        ),
+        sort_strategies=sort_strategies,
         get_coffee_details=GetCoffeeDetails(
             coffee_repository, review_repository, user_repository
         ),

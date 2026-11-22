@@ -35,7 +35,9 @@ def create_app(config: dict | None = None) -> Flask:
     )
     app.register_blueprint(
         create_coffee_blueprint(
-            container.search_coffees, container.get_coffee_details
+            container.search_coffees,
+            container.get_coffee_details,
+            container.sort_strategies,
         )
     )
 

@@ -3,12 +3,14 @@
 from dataclasses import dataclass
 
 from app.presenters.date_presenter import format_date
-from app.presenters.rating_presenter import format_rating
+from app.presenters.rating_presenter import (
+    format_rating,
+    format_rating_summary,
+)
 from use_cases.dtos import CoffeeDetailsDTO, CoffeeRatingDTO, ReviewDTO
 
 NOT_INFORMED = "Não informado"
 NO_REVIEWS = "Ainda não há avaliações."
-NO_RATING = "Sem avaliações"
 
 
 @dataclass(frozen=True)
@@ -106,7 +108,7 @@ def present_details(details: CoffeeDetailsDTO) -> CoffeeDetailsView:
 
 def _present_rating(rating: CoffeeRatingDTO) -> RatingView:
     return RatingView(
-        summary=_rating_summary(rating),
+        summary=format_rating_summary(rating),
         has_reviews=rating.count > 0,
         histogram=tuple(
             HistogramRowView(
@@ -118,14 +120,6 @@ def _present_rating(rating: CoffeeRatingDTO) -> RatingView:
             for bucket in reversed(rating.histogram)
         ),
     )
-
-
-def _rating_summary(rating: CoffeeRatingDTO) -> str:
-    if rating.average is None:
-        return NO_RATING
-    noun = "avaliação" if rating.count == 1 else "avaliações"
-    average = str(rating.average).replace(".", ",")
-    return f"{average} ★ · {rating.count} {noun}"
 
 
 def _present_review(review: ReviewDTO) -> ReviewView:

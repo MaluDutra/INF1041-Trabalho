@@ -1,6 +1,7 @@
 """Repositório de reviews em SQLite."""
 
 import sqlite3
+from collections.abc import Collection
 from contextlib import closing
 from dataclasses import replace
 from datetime import datetime
@@ -83,6 +84,24 @@ class SqliteReviewRepository(ReviewRepository):
                 (coffee_id,),
             ).fetchall()
         return [row["rating"] for row in rows]
+
+    def list_ratings_by_coffees(
+        self, coffee_ids: Collection[int]
+    ) -> dict[int, list[int]]:
+        ids = list(coffee_ids)
+        if not ids:
+            return {}
+        placeholders = ", ".join("?" for _ in ids)
+        with closing(connect(self._db_path)) as connection:
+            rows = connection.execute(
+                "SELECT coffee_id, rating FROM reviews"
+                f" WHERE coffee_id IN ({placeholders})",
+                ids,
+            ).fetchall()
+        grouped: dict[int, list[int]] = {}
+        for row in rows:
+            grouped.setdefault(row["coffee_id"], []).append(row["rating"])
+        return grouped
 
     def update(self, review: Review) -> Review:
         with closing(connect(self._db_path)) as connection, connection:

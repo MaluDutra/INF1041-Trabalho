@@ -325,6 +325,15 @@ body {
   padding: 0.4rem 0.6rem;
 }
 
+.search-form select {
+  padding: 0.4rem 0.6rem;
+}
+
+.coffee-card .rating {
+  font-weight: bold;
+  color: #4a2c17;
+}
+
 .search-warning {
   background: #fff3cd;
   border: 1px solid #e6c97a;

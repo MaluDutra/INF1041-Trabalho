@@ -1,6 +1,7 @@
 """Port do repositório de reviews."""
 
 from abc import ABC, abstractmethod
+from collections.abc import Collection
 
 from domain.entities.review import Review
 
@@ -35,6 +36,16 @@ class ReviewRepository(ABC):
     @abstractmethod
     def list_ratings_by_coffee(self, coffee_id: int) -> list[int]:
         """Devolve as notas dos reviews do café, sem ordem garantida."""
+
+    @abstractmethod
+    def list_ratings_by_coffees(
+        self, coffee_ids: Collection[int]
+    ) -> dict[int, list[int]]:
+        """Devolve as notas de vários cafés numa só consulta.
+
+        A chave é o id do café e o valor, as suas notas, sem ordem
+        garantida. Café sem reviews pode faltar no resultado.
+        """
 
     @abstractmethod
     def update(self, review: Review) -> Review:

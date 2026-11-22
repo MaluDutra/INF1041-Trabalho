@@ -7,19 +7,14 @@ from decimal import Decimal
 
 @dataclass(frozen=True)
 class SearchCoffeesInput:
-    """Pedido de busca; ``term`` vazio devolve o catálogo inteiro."""
+    """Pedido de busca; ``term`` vazio devolve o catálogo inteiro.
+
+    ``sort`` é o id de uma ordenação; vazio ou desconhecido usa a
+    ordenação padrão.
+    """
 
     term: str = ""
-
-
-@dataclass(frozen=True)
-class CoffeeSummaryDTO:
-    """Café como aparece nos cards do catálogo."""
-
-    id: int
-    name: str
-    roaster: str
-    origin: str
+    sort: str = ""
 
 
 @dataclass(frozen=True)
@@ -70,6 +65,17 @@ class CoffeeRatingDTO:
     average: Decimal | None
     count: int
     histogram: tuple[RatingBucketDTO, ...]
+
+
+@dataclass(frozen=True)
+class CoffeeSummaryDTO:
+    """Café como aparece nos cards do catálogo, com a nota agregada."""
+
+    id: int
+    name: str
+    roaster: str
+    origin: str
+    rating: CoffeeRatingDTO
 
 
 @dataclass(frozen=True)

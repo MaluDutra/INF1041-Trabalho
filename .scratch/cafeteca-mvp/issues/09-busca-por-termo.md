@@ -1,6 +1,6 @@
 # 09: Busca por termo
 
-**Status:** ready-for-agent
+**Status:** done
 
 **Jira:** SCRUM-13
 **Histórias da spec:** 24 a 28, 42 e 43 (termo)
@@ -24,23 +24,23 @@ completo).
 
 **Critérios de aceite:**
 
-- [ ] "sitio" encontra "Sítio da Torre", e "SITIO DA" também.
-- [ ] "torre sítio" não encontra "Sítio da Torre": o termo é comparado
+- [x] "sitio" encontra "Sítio da Torre", e "SITIO DA" também.
+- [x] "torre sítio" não encontra "Sítio da Torre": o termo é comparado
       como uma frase inteira contida no texto, não palavra por palavra.
-- [ ] O termo casa com a torrefação e com o produtor, além do nome.
-- [ ] "a" e " a " mostram o aviso de mínimo de 2 caracteres e não fazem a
+- [x] O termo casa com a torrefação e com o produtor, além do nome.
+- [x] "a" e " a " mostram o aviso de mínimo de 2 caracteres e não fazem a
       busca.
-- [ ] Um termo vazio ou "   " mostra o catálogo inteiro, sem aviso.
-- [ ] DADO QUE nenhum café casa com o termo, QUANDO a busca é feita,
+- [x] Um termo vazio ou "   " mostra o catálogo inteiro, sem aviso.
+- [x] DADO QUE nenhum café casa com o termo, QUANDO a busca é feita,
       ENTÃO a página mostra uma mensagem com dicas (conferir a grafia,
       usar um termo mais curto, remover filtros), e não uma lista vazia.
-- [ ] O termo digitado continua no campo de busca na página de
+- [x] O termo digitado continua no campo de busca na página de
       resultados.
-- [ ] Testes de `SearchCoffees`, citando SCRUM-13, só com fakes: termo no
+- [x] Testes de `SearchCoffees`, citando SCRUM-13, só com fakes: termo no
       nome, na torrefação e no produtor, termo com acentos e maiúsculas,
       frase fora de ordem, termo com 1 caractere, termo vazio, termo só
       com espaços e nenhum resultado.
-- [ ] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
+- [x] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
       passam.
 
 **Fora deste ticket:** ordenações e nota agregada nos cards (ticket 10)

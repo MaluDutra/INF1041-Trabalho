@@ -4,7 +4,14 @@
 
 {% block content %}
 <h1>Cafés</h1>
-{% if coffees %}
+<form class="search-form" method="get" action="{{ url_for('coffees.index') }}" role="search">
+  <label for="q">Buscar por nome, torrefação ou produtor</label>
+  <input type="search" id="q" name="q" value="{{ term }}">
+  <button type="submit">Buscar</button>
+</form>
+{% if warning %}
+<p class="search-warning" role="alert">{{ warning }}</p>
+{% elif coffees %}
 <ul class="coffee-grid">
   {% for coffee in coffees %}
   <li class="coffee-card">
@@ -14,6 +21,16 @@
   </li>
   {% endfor %}
 </ul>
+{% elif term.strip() %}
+<section class="no-results">
+  <h2>Nenhum café encontrado</h2>
+  <p>Que tal ajustar a busca?</p>
+  <ul>
+    <li>Confira a grafia do termo.</li>
+    <li>Use um termo mais curto.</li>
+    <li>Remova filtros, se houver algum marcado.</li>
+  </ul>
+</section>
 {% else %}
 <p>O catálogo ainda não tem cafés.</p>
 {% endif %}

@@ -129,3 +129,75 @@ def test_home_cards_link_to_the_coffee_page(client, repository):  # SCRUM-12
     html = client.get("/").get_data(as_text=True)
 
     assert f'href="/cafes/{stored.id}"' in html
+
+
+def test_home_search_lists_only_matching_coffees(client, repository):
+    # SCRUM-13
+    add_full_coffee(repository)
+    add_bare_coffee(repository)
+
+    html = client.get("/?q=sitio").get_data(as_text=True)
+
+    assert "Sítio da Torre" in html
+    assert "Blend" not in html
+
+
+@pytest.mark.parametrize("term", ["a", "+a+"])
+def test_home_short_term_shows_warning_and_does_not_search(
+    client, repository, term
+):  # SCRUM-13
+    add_full_coffee(repository)
+
+    response = client.get("/", query_string={"q": term.replace("+", " ")})
+
+    html = response.get_data(as_text=True)
+    assert response.status_code == 200
+    assert "pelo menos 2 caracteres" in html
+    assert "Sítio da Torre" not in html
+    assert "Nenhum café encontrado" not in html
+
+
+def test_home_without_matches_shows_tips_instead_of_empty_list(
+    client, repository
+):  # SCRUM-13
+    add_full_coffee(repository)
+
+    html = client.get("/?q=inexistente").get_data(as_text=True)
+
+    assert "Nenhum café encontrado" in html
+    assert "grafia" in html
+    assert "termo mais curto" in html
+    assert "filtros" in html
+    assert "coffee-grid" not in html
+    assert "O catálogo ainda não tem cafés" not in html
+
+
+def test_home_keeps_the_term_in_the_search_field(client, repository):
+    # SCRUM-13
+    add_full_coffee(repository)
+
+    html = client.get("/?q=Sítio").get_data(as_text=True)
+
+    assert 'name="q"' in html
+    assert 'value="Sítio"' in html
+
+
+def test_home_escapes_the_term_in_the_search_field(client):  # SCRUM-13
+    html = client.get('/?q="><script>').get_data(as_text=True)
+
+    assert "<script>" not in html
+
+
+@pytest.mark.parametrize("term", ["", "   "])
+def test_home_blank_term_lists_whole_catalog_without_warning(
+    client, repository, term
+):  # SCRUM-13
+    add_full_coffee(repository)
+    add_bare_coffee(repository)
+
+    html = client.get("/", query_string={"q": term}).get_data(as_text=True)
+
+    assert "Sítio da Torre" in html
+    assert "Blend" in html
+    assert "caracteres" not in html
+    assert "Nenhum café encontrado" not in html

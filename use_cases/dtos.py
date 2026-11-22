@@ -6,6 +6,13 @@ from decimal import Decimal
 
 
 @dataclass(frozen=True)
+class SearchCoffeesInput:
+    """Pedido de busca; ``term`` vazio devolve o catálogo inteiro."""
+
+    term: str = ""
+
+
+@dataclass(frozen=True)
 class CoffeeSummaryDTO:
     """Café como aparece nos cards do catálogo."""
 

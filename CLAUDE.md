@@ -140,7 +140,11 @@ INF1041-Trabalho/
 │   ├── domain/
 │   └── use_cases/
 │
+├── .github/workflows/ci.yml       # Ruff + import-linter + pytest
+├── .pre-commit-config.yaml
+├── pyproject.toml                 # Configuração do Ruff, import-linter e pytest
 ├── requirements.txt
+├── requirements-dev.txt
 ├── README.md
 └── CLAUDE.md
 ```
@@ -191,21 +195,46 @@ INF1041-Trabalho/
 ```bash
 python -m venv .venv
 .venv\Scripts\activate            # Windows (bash: source .venv/Scripts/activate)
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
+pre-commit install                 # ativa os linters a cada commit
 
 flask --app app.main run --debug   # sobe a aplicação
 pytest                             # roda os testes
-pytest --cov=domain --cov=use_cases --cov-report=term-missing
-flake8 .                           # verifica PEP-8
+pytest --cov --cov-report=term-missing   # cobertura de domain e use_cases
+
+ruff check .                       # PEP-8, imports, nomes (--fix corrige)
+ruff format .                      # formata o código
+lint-imports                       # verifica a regra de dependência
+pre-commit run --all-files         # roda todos os hooks
 ```
 
-Dependências esperadas em `requirements.txt`: `flask`, `pytest`, `pytest-cov`, `flake8`.
+- `requirements.txt`: dependências de execução (Flask).
+- `requirements-dev.txt`: ferramentas de desenvolvimento (pytest, pytest-cov, ruff,
+  import-linter, pre-commit).
+- A configuração do Ruff, do import-linter e do pytest fica em `pyproject.toml`.
+
+## Linters (obrigatório passar antes de commitar)
+
+- **Ruff** garante o PEP-8 (vale 1,0 ponto): linhas com até 79 caracteres, nomes,
+  ordem de imports, imports não usados. Rode `ruff check . --fix` e `ruff format .`
+  antes de commitar.
+- **import-linter** garante a Clean Architecture (vale 2,0 pontos). Os contratos em
+  `pyproject.toml` são:
+  - camadas `app` → `infra` → `use_cases` → `domain`: uma camada só importa as que
+    estão abaixo dela;
+  - `domain` e `use_cases` não podem importar `flask`, `werkzeug` nem `sqlite3`.
+- Se o `lint-imports` falhar, corrija a dependência no código (normalmente criando um
+  port em `use_cases/ports/`). **Nunca** afrouxe ou remova um contrato para fazer o
+  lint passar.
+- O pre-commit roda os dois linters a cada commit. O GitHub Actions
+  (`.github/workflows/ci.yml`) roda Ruff, import-linter e pytest em cada push e PR.
 
 ## Fluxo de trabalho
 
 - Branches e commits citam a issue do Jira: `feature/SCRUM-14-create-review`,
   `SCRUM-14: adiciona caso de uso CreateReview`.
-- Integração na `main` por pull request revisado por pelo menos 1 pessoa (DoD do Jira).
+- Integração na `main` por pull request revisado por pelo menos 1 pessoa e com o CI
+  verde (DoD do Jira).
 - Uso de IA (bônus): registrar no README onde e como o Claude foi usado e qual foi a
   estratégia (por exemplo: geração de esqueleto e testes a partir dos critérios de
   aceitação, sempre com revisão humana).

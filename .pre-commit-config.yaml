@@ -1,0 +1,19 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.6
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  # O pre-commit instala o import-linter num ambiente próprio, então o hook
+  # funciona mesmo sem o .venv ativado (ex.: commit pelo VS Code).
+  - repo: local
+    hooks:
+      - id: lint-imports
+        name: import-linter (Clean Architecture)
+        entry: lint-imports
+        language: python
+        additional_dependencies: [import-linter==2.17]
+        types: [python]
+        pass_filenames: false

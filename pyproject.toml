@@ -1,0 +1,56 @@
+[project]
+name = "cafeteca"
+version = "0.1.0"
+description = "Web-app para amantes de café encontrarem, avaliarem e discutirem cafés."
+requires-python = ">=3.12"
+
+# ---------------------------------------------------------------------------
+# Ruff: estilo PEP-8, imports, nomes e boas práticas
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 79
+target-version = "py312"
+extend-exclude = [".github"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",  # pycodestyle (PEP-8)
+    "F",       # pyflakes: imports e variáveis não usados
+    "I",       # isort: ordenação de imports
+    "N",       # pep8-naming: snake_case, PascalCase
+    "B",       # flake8-bugbear: armadilhas comuns
+    "UP",      # pyupgrade: sintaxe moderna
+    "SIM",     # flake8-simplify
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["domain", "use_cases", "infra", "app"]
+
+# ---------------------------------------------------------------------------
+# import-linter: regra de dependência da Clean Architecture
+# ---------------------------------------------------------------------------
+[tool.importlinter]
+root_packages = ["domain", "use_cases", "infra", "app"]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Camadas da Clean Architecture"
+type = "layers"
+# De cima para baixo: uma camada só importa as que estão abaixo dela.
+layers = ["app", "infra", "use_cases", "domain"]
+
+[[tool.importlinter.contracts]]
+name = "domain e use_cases independentes de framework e banco"
+type = "forbidden"
+source_modules = ["domain", "use_cases"]
+forbidden_modules = ["flask", "werkzeug", "sqlite3"]
+
+# ---------------------------------------------------------------------------
+# Pytest e cobertura
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.coverage.run]
+source = ["domain", "use_cases"]

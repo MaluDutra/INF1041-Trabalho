@@ -13,7 +13,8 @@ class SearchCoffeesInput:
     ordenação padrão. Cada filtro (``origins``, ...) traz rótulos de um
     conjunto fechado do domínio: dentro do filtro vale OU e entre filtros
     vale E. Rótulos desconhecidos são ignorados, e um filtro sem rótulo
-    conhecido não filtra.
+    conhecido não filtra. ``min_rating`` é a nota mínima: ``None`` (ou um
+    valor fora das opções) não filtra.
     """
 
     term: str = ""
@@ -22,6 +23,7 @@ class SearchCoffeesInput:
     processes: tuple[str, ...] = ()
     roasts: tuple[str, ...] = ()
     sensory_notes: tuple[str, ...] = ()
+    min_rating: int | None = None
 
 
 @dataclass(frozen=True)

@@ -553,3 +553,128 @@ def test_home_keeps_filters_checked_when_the_term_is_short(client):
 
     assert "pelo menos 2 caracteres" in html
     assert checked_values(html, "origem") == ["Brasil"]
+
+
+def selected_min_rating(html):
+    block = re.search(r'<select id="nota_minima".*?</select>', html, re.S)
+    return re.findall(r'<option value="([^"]*)" selected', block.group(0))
+
+
+def test_home_min_rating_filter_lists_only_coffees_at_or_above(
+    client, repository, tmp_path
+):  # SCRUM-13
+    add_review(
+        tmp_path, add_attr_coffee(repository, "Alto", Origin.BRAZIL), 5, 4
+    )
+    add_review(
+        tmp_path, add_attr_coffee(repository, "Baixo", Origin.BRAZIL), 4, 3
+    )
+    add_attr_coffee(repository, "Sem nota", Origin.BRAZIL)
+
+    html = client.get("/", query_string={"nota_minima": "4"}).get_data(
+        as_text=True
+    )
+
+    assert "Alto" in html
+    assert "Baixo" not in html
+    assert "Sem nota" not in html
+
+
+def test_home_form_lists_the_min_rating_options_with_any_marked(client):
+    # SCRUM-13
+    html = client.get("/").get_data(as_text=True)
+
+    for label in ["Qualquer", "4+", "3+", "2+"]:
+        assert f">{label}</option>" in html
+    assert selected_min_rating(html) == [""]
+
+
+def test_home_min_rating_any_lists_unrated_coffees(client, repository):
+    # SCRUM-13
+    add_attr_coffee(repository, "Sem nota", Origin.BRAZIL)
+
+    html = client.get("/", query_string={"nota_minima": ""}).get_data(
+        as_text=True
+    )
+
+    assert "Sem nota" in html
+    assert "Nenhum café encontrado" not in html
+
+
+def test_home_min_rating_without_matches_shows_tips_with_filter_hint(
+    client, repository, tmp_path
+):  # SCRUM-13
+    add_review(tmp_path, add_attr_coffee(repository, "Baixo", Origin.PERU), 2)
+
+    html = client.get("/", query_string={"nota_minima": "4"}).get_data(
+        as_text=True
+    )
+
+    assert "Nenhum café encontrado" in html
+    assert "Remova filtros" in html
+    assert selected_min_rating(html) == ["4"]
+
+
+def test_home_min_rating_combines_with_term_sort_and_filters_and_stays(
+    client, repository, tmp_path
+):  # SCRUM-13
+    add_review(
+        tmp_path, add_attr_coffee(repository, "Bourbon A", Origin.BRAZIL), 5
+    )
+    add_review(
+        tmp_path,
+        add_attr_coffee(repository, "Bourbon B", Origin.BRAZIL),
+        4,
+        4,
+        4,
+    )
+    add_review(
+        tmp_path, add_attr_coffee(repository, "Bourbon C", Origin.PERU), 5
+    )
+    add_review(
+        tmp_path, add_attr_coffee(repository, "Bourbon D", Origin.BRAZIL), 2
+    )
+    add_review(
+        tmp_path, add_attr_coffee(repository, "Geisha", Origin.BRAZIL), 5
+    )
+
+    html = client.get(
+        "/",
+        query_string={
+            "q": "bourbon",
+            "ordenar": "mais-avaliados",
+            "origem": "Brasil",
+            "nota_minima": "4",
+        },
+    ).get_data(as_text=True)
+
+    assert card_order(html, "Bourbon A", "Bourbon B") == [
+        "Bourbon B",
+        "Bourbon A",
+    ]
+    for name in ["Bourbon C", "Bourbon D", "Geisha"]:
+        assert name not in html
+    assert 'value="bourbon"' in html
+    assert checked_values(html, "origem") == ["Brasil"]
+    assert selected_min_rating(html) == ["4"]
+
+
+def test_home_keeps_min_rating_selected_when_the_term_is_short(client):
+    # SCRUM-13
+    html = client.get("/?q=a&nota_minima=3").get_data(as_text=True)
+
+    assert "pelo menos 2 caracteres" in html
+    assert selected_min_rating(html) == ["3"]
+
+
+def test_home_ignores_unknown_min_rating(client, repository):  # SCRUM-13
+    add_attr_coffee(repository, "Sem nota", Origin.BRAZIL)
+
+    for raw in ["9", "abc", "1", "<script>"]:
+        response = client.get("/", query_string={"nota_minima": raw})
+
+        html = response.get_data(as_text=True)
+        assert response.status_code == 200
+        assert "Sem nota" in html
+        assert selected_min_rating(html) == [""]
+        assert "<script>" not in html

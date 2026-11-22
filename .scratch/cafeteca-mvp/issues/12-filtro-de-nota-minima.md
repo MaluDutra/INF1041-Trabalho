@@ -1,6 +1,6 @@
 # 12: Filtro de nota mínima
 
-**Status:** ready-for-agent
+**Status:** done
 
 **Jira:** SCRUM-13
 **Histórias da spec:** 32, 33 e 43 (nota mínima)
@@ -20,24 +20,25 @@ estratégia nova, sem alterar o `SearchCoffees`.
   um café exibido como "4,0 ★" aparece em "4+". **A confirmar com o
   grupo:** a spec não diz se a comparação usa a média exata ou a
   arredondada. Se o grupo preferir a exata, troque este critério e
-  registre a decisão no glossário.
+  registre a decisão no glossário. (Decisão registrada no glossário: média
+  arredondada.)
 
 **Bloqueado por:** 11 (Filtros por origem, processo, torra e nota
 sensorial).
 
 **Critérios de aceite:**
 
-- [ ] Com "4+", um café de média 4,5 aparece e um de média 3,5 não.
-- [ ] Com "4+", um café de média exata 3,96 (exibida como "4,0") aparece.
-- [ ] Com "2+", "3+" ou "4+", os cafés sem avaliações não aparecem. Com
+- [x] Com "4+", um café de média 4,5 aparece e um de média 3,5 não.
+- [x] Com "4+", um café de média exata 3,96 (exibida como "4,0") aparece.
+- [x] Com "2+", "3+" ou "4+", os cafés sem avaliações não aparecem. Com
       "Qualquer", aparecem.
-- [ ] A nota mínima combina com o termo, com os outros filtros e com a
+- [x] A nota mínima combina com o termo, com os outros filtros e com a
       ordenação, e continua marcada na página de resultados.
-- [ ] O diff deste ticket não altera o corpo do `SearchCoffees`: só
+- [x] O diff deste ticket não altera o corpo do `SearchCoffees`: só
       acrescenta a nova estratégia, a ligação na composition root e a
       interface.
-- [ ] Testes de `SearchCoffees`, citando SCRUM-13, só com fakes: cada
+- [x] Testes de `SearchCoffees`, citando SCRUM-13, só com fakes: cada
       opção, exclusão dos cafés sem avaliações, o limite no
       arredondamento e a combinação com os outros filtros.
-- [ ] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
+- [x] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
       passam.

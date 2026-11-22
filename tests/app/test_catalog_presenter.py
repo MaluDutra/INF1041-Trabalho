@@ -1,8 +1,10 @@
 from app.presenters.catalog_presenter import (
     FILTER_FIELDS,
     has_active_filters,
+    parse_min_rating,
     present_cards,
     present_filter_groups,
+    present_min_rating_options,
     present_sort_options,
 )
 from domain.value_objects.origin import Origin
@@ -129,3 +131,35 @@ def test_filter_fields_name_the_search_input_attributes():  # SCRUM-13
         "torra": "roasts",
         "nota": "sensory_notes",
     }
+
+
+def test_min_rating_options_list_any_and_the_scale_thresholds():
+    # SCRUM-13
+    options = present_min_rating_options(None)
+
+    assert [(o.value, o.label, o.selected) for o in options] == [
+        ("", "Qualquer", True),
+        ("4", "4+", False),
+        ("3", "3+", False),
+        ("2", "2+", False),
+    ]
+
+
+def test_min_rating_options_mark_the_chosen_one():  # SCRUM-13
+    options = present_min_rating_options(3)
+
+    assert [o.value for o in options if o.selected] == ["3"]
+
+
+def test_parse_min_rating_accepts_only_the_listed_options():  # SCRUM-13
+    assert parse_min_rating("4") == 4
+    assert parse_min_rating("2") == 2
+    for raw in ["", "1", "5", "9", "-3", "abc", "4.5", "<script>", " 4"]:
+        assert parse_min_rating(raw) is None
+
+
+def test_a_min_rating_counts_as_an_active_filter():  # SCRUM-13
+    groups = present_filter_groups({})
+
+    assert has_active_filters(groups, min_rating=4)
+    assert not has_active_filters(groups, min_rating=None)

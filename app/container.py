@@ -18,6 +18,7 @@ from use_cases.coffee.search_coffees import (
     SearchCoffees,
 )
 from use_cases.coffee.search_filters import FILTER_CRITERION_FACTORIES
+from use_cases.coffee.search_min_rating import min_rating_criterion
 from use_cases.coffee.search_sorting import (
     DEFAULT_SORT_STRATEGIES,
     SortStrategy,
@@ -59,6 +60,7 @@ def build_container(db_path: str | Path) -> Container:
             criterion_factories=(
                 *DEFAULT_CRITERION_FACTORIES,
                 *FILTER_CRITERION_FACTORIES,
+                min_rating_criterion,
             ),
             sort_strategies=sort_strategies,
         ),

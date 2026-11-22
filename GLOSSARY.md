@@ -115,7 +115,9 @@ combinam com E.
 
 **Nota mínima**:
 Filtro que mantém só os cafés cuja média da nota agregada é maior ou igual a
-um valor escolhido. Exclui os cafés sem avaliações.
+um valor escolhido ("4+", "3+" ou "2+"; "Qualquer" não filtra). A comparação
+usa a média arredondada, a mesma que o card mostra: um café exibido como
+"4,0" aparece em "4+". Exclui os cafés sem avaliações.
 
 **Ordenação**:
 Critério de ordem dos resultados: melhor avaliados, mais avaliados ou mais

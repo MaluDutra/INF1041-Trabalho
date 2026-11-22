@@ -13,6 +13,12 @@
     <option value="{{ option.id }}"{% if option.selected %} selected{% endif %}>{{ option.label }}</option>
     {% endfor %}
   </select>
+  <label for="{{ min_rating_param }}">Nota mínima</label>
+  <select id="{{ min_rating_param }}" name="{{ min_rating_param }}">
+    {% for option in min_rating_options %}
+    <option value="{{ option.value }}"{% if option.selected %} selected{% endif %}>{{ option.label }}</option>
+    {% endfor %}
+  </select>
   <div class="filters">
     {% for group in filter_groups %}
     <fieldset class="filter-group">

@@ -10,6 +10,7 @@ from domain.value_objects.origin import Origin
 from domain.value_objects.process import Process
 from domain.value_objects.roast import Roast
 from domain.value_objects.sensory_note import SensoryNote
+from use_cases.coffee.search_min_rating import MIN_RATING_OPTIONS
 from use_cases.coffee.search_sorting import SortStrategy
 from use_cases.dtos import CoffeeSummaryDTO
 
@@ -62,6 +63,13 @@ class FilterGroupView:
     options: tuple[FilterOptionView, ...]
 
 
+@dataclass(frozen=True)
+class MinRatingOptionView:
+    value: str
+    label: str
+    selected: bool
+
+
 def present_cards(
     summaries: Iterable[CoffeeSummaryDTO],
 ) -> list[CoffeeCardView]:
@@ -110,8 +118,37 @@ def present_filter_groups(
     )
 
 
-def has_active_filters(groups: Iterable[FilterGroupView]) -> bool:
-    return any(option.checked for g in groups for option in g.options)
+def parse_min_rating(raw: str) -> int | None:
+    """Converte o parâmetro do endereço na nota mínima.
+
+    Só valem as opções do caso de uso; qualquer outro texto vira
+    ``None`` ("Qualquer"), sem erro.
+    """
+    for value in MIN_RATING_OPTIONS:
+        if raw == str(value):
+            return value
+    return None
+
+
+def present_min_rating_options(
+    chosen: int | None,
+) -> tuple[MinRatingOptionView, ...]:
+    """ "Qualquer" mais um "N+" por opção do caso de uso; marca a escolhida."""
+    options = [MinRatingOptionView("", "Qualquer", chosen is None)]
+    options.extend(
+        MinRatingOptionView(str(value), f"{value}+", value == chosen)
+        for value in MIN_RATING_OPTIONS
+    )
+    return tuple(options)
+
+
+def has_active_filters(
+    groups: Iterable[FilterGroupView], min_rating: int | None = None
+) -> bool:
+    """Há opção marcada ou nota mínima escolhida."""
+    return min_rating is not None or any(
+        option.checked for g in groups for option in g.options
+    )
 
 
 def _present_options(

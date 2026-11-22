@@ -7,8 +7,10 @@ from flask import Blueprint, render_template, request
 from app.presenters.catalog_presenter import (
     FILTER_FIELDS,
     has_active_filters,
+    parse_min_rating,
     present_cards,
     present_filter_groups,
+    present_min_rating_options,
     present_sort_options,
 )
 from app.routes.coffee_page import render_coffee_page
@@ -22,6 +24,7 @@ from use_cases.dtos import SearchCoffeesInput
 OPEN_FORM_MARKER = "avaliar"
 OPEN_EDIT_MARKER = "editar"
 SORT_PARAM = "ordenar"
+MIN_RATING_PARAM = "nota_minima"
 
 
 def create_coffee_blueprint(
@@ -42,10 +45,13 @@ def create_coffee_blueprint(
         filters = {
             field.input_field: selected[field.param] for field in FILTER_FIELDS
         }
+        min_rating = parse_min_rating(request.args.get(MIN_RATING_PARAM, ""))
         filter_groups = present_filter_groups(selected)
         try:
             coffees = search_coffees.execute(
-                SearchCoffeesInput(term, sort, **filters)
+                SearchCoffeesInput(
+                    term, sort, min_rating=min_rating, **filters
+                )
             )
             warning = None
         except ValidationError as error:
@@ -58,7 +64,9 @@ def create_coffee_blueprint(
             sort_param=SORT_PARAM,
             sort_options=present_sort_options(sort_strategies, sort),
             filter_groups=filter_groups,
-            has_filters=has_active_filters(filter_groups),
+            min_rating_param=MIN_RATING_PARAM,
+            min_rating_options=present_min_rating_options(min_rating),
+            has_filters=has_active_filters(filter_groups, min_rating),
         )
 
     @blueprint.get("/cafes/<int:coffee_id>")

@@ -68,6 +68,14 @@ class SqliteReviewRepository(ReviewRepository):
             ).fetchall()
         return [self._to_review(row) for row in rows]
 
+    def list_by_author(self, author_id: int) -> list[Review]:
+        with closing(connect(self._db_path)) as connection:
+            rows = connection.execute(
+                f"SELECT {_COLUMNS} FROM reviews WHERE user_id = ?",
+                (author_id,),
+            ).fetchall()
+        return [self._to_review(row) for row in rows]
+
     def list_ratings_by_coffee(self, coffee_id: int) -> list[int]:
         with closing(connect(self._db_path)) as connection:
             rows = connection.execute(

@@ -1,5 +1,6 @@
 """Fake em memória do CoffeeRepository, reaproveitado pelos testes."""
 
+from collections.abc import Collection
 from dataclasses import replace
 
 from domain.entities.coffee import Coffee
@@ -24,6 +25,9 @@ class InMemoryCoffeeRepository(CoffeeRepository):
 
     def list_all(self) -> list[Coffee]:
         return list(self._coffees.values())
+
+    def list_by_ids(self, coffee_ids: Collection[int]) -> list[Coffee]:
+        return [self._coffees[i] for i in coffee_ids if i in self._coffees]
 
     def get_by_id(self, coffee_id: int) -> Coffee | None:
         return self._coffees.get(coffee_id)

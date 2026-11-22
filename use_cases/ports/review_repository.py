@@ -29,6 +29,10 @@ class ReviewRepository(ABC):
         """Devolve os reviews do café, sem ordem garantida."""
 
     @abstractmethod
+    def list_by_author(self, author_id: int) -> list[Review]:
+        """Devolve os reviews do autor, sem ordem garantida."""
+
+    @abstractmethod
     def list_ratings_by_coffee(self, coffee_id: int) -> list[int]:
         """Devolve as notas dos reviews do café, sem ordem garantida."""
 

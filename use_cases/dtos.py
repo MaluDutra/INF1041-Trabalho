@@ -160,3 +160,16 @@ class DeleteReviewInput:
     user_id: int
     coffee_id: int
     review_id: int
+
+
+@dataclass(frozen=True)
+class UserReviewDTO:
+    """Review de um usuário com o id e o nome do café avaliado."""
+
+    id: int
+    coffee_id: int
+    coffee_name: str
+    rating: int
+    text: str | None
+    created_at: datetime
+    edited: bool

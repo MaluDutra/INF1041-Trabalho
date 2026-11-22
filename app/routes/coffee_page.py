@@ -17,12 +17,15 @@ def render_coffee_page(
     open_edit: bool = False,
     review_form: dict | None = None,
     review_error: str | None = None,
+    next_path: str | None = None,
 ) -> tuple[str, int]:
     """Monta a página do café (ou o 404 se ele não existir).
 
     ``open_form`` abre o formulário de review e ``open_edit`` o de edição
     do review próprio. Um erro de review abre o formulário de criação,
-    e ``review_form`` devolve os valores digitados.
+    e ``review_form`` devolve os valores digitados. ``next_path`` é o
+    destino interno, já validado, que o formulário de edição devolve no
+    envio (por exemplo, "Minhas avaliações").
     """
     current_user = g.get("current_user")
     try:
@@ -39,5 +42,6 @@ def render_coffee_page(
         open_edit=open_edit,
         review_form=review_form or {},
         review_error=review_error,
+        next_path=next_path,
     )
     return html, status

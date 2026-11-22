@@ -36,6 +36,7 @@ def sqlite_db(tmp_path):
     init_schema(connection)
     connection.close()
     SqliteUserRepository(path).add(User("Ana", "ana@x.com", "h"))
+    SqliteUserRepository(path).add(User("Bia", "bia@x.com", "h"))
     SqliteCoffeeRepository(path).add(
         Coffee(
             name="Blend",
@@ -125,3 +126,14 @@ def test_delete_of_a_missing_review_raises_not_found(repository):
     # SCRUM-14
     with pytest.raises(NotFoundError):
         repository.delete(999)
+
+
+def test_list_by_author_returns_only_that_authors_reviews(repository, stored):
+    # SCRUM-14
+    other = repository.add(
+        Review(author_id=2, coffee_id=1, rating=5, text=None, created_at=NOW)
+    )
+
+    assert repository.list_by_author(1) == [stored]
+    assert repository.list_by_author(2) == [other]
+    assert repository.list_by_author(99) == []

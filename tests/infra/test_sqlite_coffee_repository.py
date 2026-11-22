@@ -103,3 +103,16 @@ def test_duplicate_identity_is_rejected_and_leaves_no_orphans(
         repository.add(full_coffee(name="sitio da torre"))
 
     assert len(repository.list_all()) == 1
+
+
+def test_list_by_ids_returns_only_the_requested_coffees(
+    repository,
+):  # SCRUM-14
+    first = repository.add(full_coffee())
+    repository.add(full_coffee(name="Blend da Casa"))
+    third = repository.add(full_coffee(name="Reserva"))
+
+    found = repository.list_by_ids([first.id, third.id, 999])
+
+    assert sorted(found, key=lambda c: c.id) == [first, third]
+    assert repository.list_by_ids([]) == []

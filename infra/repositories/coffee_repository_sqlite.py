@@ -2,6 +2,7 @@
 
 import sqlite3
 from collections import defaultdict
+from collections.abc import Collection
 from contextlib import closing
 from dataclasses import replace
 from datetime import date
@@ -66,6 +67,16 @@ class SqliteCoffeeRepository(CoffeeRepository):
             ).fetchall()
             coffees = self._build_coffees(connection, rows)
         return coffees[0] if coffees else None
+
+    def list_by_ids(self, coffee_ids: Collection[int]) -> list[Coffee]:
+        ids = list(set(coffee_ids))
+        marks = ", ".join("?" for _ in ids)
+        with closing(connect(self._db_path)) as connection:
+            rows = connection.execute(
+                f"SELECT {_COFFEE_COLUMNS} FROM coffees WHERE id IN ({marks})",
+                ids,
+            ).fetchall()
+            return self._build_coffees(connection, rows)
 
     def list_all(self) -> list[Coffee]:
         with closing(connect(self._db_path)) as connection:

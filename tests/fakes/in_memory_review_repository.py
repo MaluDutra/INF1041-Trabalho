@@ -38,6 +38,13 @@ class InMemoryReviewRepository(ReviewRepository):
             if review.coffee_id == coffee_id
         ]
 
+    def list_by_author(self, author_id: int) -> list[Review]:
+        return [
+            review
+            for review in self._reviews.values()
+            if review.author_id == author_id
+        ]
+
     def list_ratings_by_coffee(self, coffee_id: int) -> list[int]:
         return [review.rating for review in self.list_by_coffee(coffee_id)]
 

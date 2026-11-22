@@ -3,6 +3,7 @@
 from flask import Blueprint, render_template, request
 
 from app.routes.coffee_page import render_coffee_page
+from app.routes.redirects import safe_next_path
 from use_cases.coffee.get_coffee_details import GetCoffeeDetails
 from use_cases.coffee.search_coffees import SearchCoffees
 
@@ -27,6 +28,7 @@ def create_coffee_blueprint(
             coffee_id,
             open_form=request.args.get(OPEN_FORM_MARKER) == "1",
             open_edit=request.args.get(OPEN_EDIT_MARKER) == "1",
+            next_path=safe_next_path(request.args.get("next")),
         )
 
     return blueprint

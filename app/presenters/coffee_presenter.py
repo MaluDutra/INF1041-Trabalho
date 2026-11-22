@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 
 from app.presenters.date_presenter import format_date
-from domain.entities.review import RATING_SCALE
+from app.presenters.rating_presenter import format_rating
 from use_cases.dtos import CoffeeDetailsDTO, CoffeeRatingDTO, ReviewDTO
 
 NOT_INFORMED = "Não informado"
@@ -132,7 +132,7 @@ def _present_review(review: ReviewDTO) -> ReviewView:
     return ReviewView(
         id=review.id,
         rating=review.rating,
-        rating_label=f"{review.rating} de {max(RATING_SCALE)}",
+        rating_label=format_rating(review.rating),
         author_name=review.author_name,
         date=format_date(review.created_at),
         text=review.text,

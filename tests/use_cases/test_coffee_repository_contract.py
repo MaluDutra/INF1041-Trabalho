@@ -53,3 +53,16 @@ def test_repository_returns_none_for_an_unknown_id():  # SCRUM-12
     repository = InMemoryCoffeeRepository()
 
     assert repository.get_by_id(42) is None
+
+
+def test_repository_lists_only_the_coffees_with_the_given_ids():
+    # SCRUM-14
+    repository = InMemoryCoffeeRepository()
+    first = repository.add(make_coffee("Sítio da Torre", "Café Lá"))
+    repository.add(make_coffee("Blend da Casa", "Café Lá"))
+    third = repository.add(make_coffee("Reserva", "Torra Boa"))
+
+    found = repository.list_by_ids([first.id, third.id, 999])
+
+    assert sorted(found, key=lambda c: c.id) == [first, third]
+    assert repository.list_by_ids([]) == []

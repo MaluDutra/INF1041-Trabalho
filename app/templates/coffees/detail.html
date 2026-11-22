@@ -83,6 +83,9 @@
       <form method="post"
             action="{{ url_for('reviews.edit', coffee_id=coffee.id, review_id=own.id) }}"
             class="form">
+        {% if next_path %}
+        <input type="hidden" name="next" value="{{ next_path }}">
+        {% endif %}
         <fieldset class="rating-field">
           <legend>Nota</legend>
           {% for value in rating_scale %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Minhas avaliações - Cafeteca{% endblock %}
+
+{% block content %}
+{% set here = url_for('reviews.my_reviews') %}
+<h1>Minhas avaliações</h1>
+{% if not reviews %}
+<p class="empty-state">
+  Você ainda não avaliou nenhum café.
+  <a href="{{ url_for('coffees.index') }}">Explore o catálogo</a>
+  e conte o que achou do seu próximo café.
+</p>
+{% else %}
+<ul class="review-list">
+  {% for review in reviews %}
+  <li class="review">
+    <h2><a href="{{ url_for('coffees.detail', coffee_id=review.coffee_id) }}">{{ review.coffee_name }}</a></h2>
+    <p class="review-meta">
+      <span class="review-rating">{{ review.rating_label }}</span>
+      <span class="review-date">{{ review.date }}</span>
+      {% if review.edited %}<span class="review-edited">editado</span>{% endif %}
+    </p>
+    {% if review.text %}
+    <p class="review-text">{{ review.text }}</p>
+    {% endif %}
+    <p class="review-actions">
+      <a class="button"
+         href="{{ url_for('reviews.edit_form', coffee_id=review.coffee_id, review_id=review.id, next=here) }}">Editar</a>
+    </p>
+    <details class="review-delete">
+      <summary class="button button-danger">Excluir</summary>
+      <form method="post"
+            action="{{ url_for('reviews.delete', coffee_id=review.coffee_id, review_id=review.id) }}">
+        <input type="hidden" name="next" value="{{ here }}">
+        <p>Excluir sua avaliação é definitivo e não pode ser desfeito.</p>
+        <button type="submit" class="button-danger">Confirmar exclusão</button>
+        <p class="hint">Para cancelar, feche este aviso clicando em "Excluir" de novo.</p>
+      </form>
+    </details>
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

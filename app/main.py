@@ -45,6 +45,7 @@ def create_app(config: dict | None = None) -> Flask:
             container.update_review,
             container.delete_review,
             container.get_coffee_details,
+            container.list_user_reviews,
         )
     )
 

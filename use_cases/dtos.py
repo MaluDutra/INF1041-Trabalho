@@ -44,3 +44,23 @@ class CoffeeDetailsDTO:
     photo_url: str | None
     story: str | None
     brew_recommendations: tuple[BrewRecommendationDTO, ...]
+
+
+@dataclass(frozen=True)
+class RegisterUserInput:
+    """Dados do formulário de cadastro; a senha ainda em texto."""
+
+    display_name: str
+    email: str
+    password: str
+
+
+@dataclass(frozen=True)
+class UserDTO:
+    """Usuário como as camadas externas o enxergam.
+
+    Não leva o e-mail nem o hash: só o que pode aparecer na interface.
+    """
+
+    id: int
+    display_name: str

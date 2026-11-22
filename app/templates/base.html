@@ -9,6 +9,16 @@
 <body>
   <header class="site-header">
     <a class="brand" href="{{ url_for('coffees.index') }}">Cafeteca</a>
+    <nav class="user-nav">
+      {% if current_user %}
+      <span class="user-name">{{ current_user.display_name }}</span>
+      <form method="post" action="{{ url_for('auth.logout') }}">
+        <button type="submit" class="link-button">Sair</button>
+      </form>
+      {% else %}
+      <a href="{{ url_for('auth.signup_form') }}">Criar conta</a>
+      {% endif %}
+    </nav>
   </header>
   <main class="container">
     {% block content %}{% endblock %}

@@ -105,3 +105,72 @@ body {
 .brew-card h3 {
   margin: 0.3rem 0;
 }
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.user-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #fff;
+}
+
+.user-nav a {
+  color: #fff;
+}
+
+.user-nav form {
+  margin: 0;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #fff;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.form {
+  display: grid;
+  gap: 0.5rem;
+  max-width: 24rem;
+}
+
+.form input {
+  padding: 0.5rem;
+  border: 1px solid #e3d5c6;
+  border-radius: 0.3rem;
+  font: inherit;
+}
+
+.form button {
+  padding: 0.6rem;
+  border: none;
+  border-radius: 0.3rem;
+  background: #4a2c17;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.hint {
+  margin: 0;
+  color: #6b4a33;
+  font-size: 0.9rem;
+}
+
+.form-error {
+  max-width: 24rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #b3261e;
+  border-radius: 0.3rem;
+  background: #fdecea;
+  color: #7a1712;
+}

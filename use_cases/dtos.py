@@ -10,11 +10,18 @@ class SearchCoffeesInput:
     """Pedido de busca; ``term`` vazio devolve o catálogo inteiro.
 
     ``sort`` é o id de uma ordenação; vazio ou desconhecido usa a
-    ordenação padrão.
+    ordenação padrão. Cada filtro (``origins``, ...) traz rótulos de um
+    conjunto fechado do domínio: dentro do filtro vale OU e entre filtros
+    vale E. Rótulos desconhecidos são ignorados, e um filtro sem rótulo
+    conhecido não filtra.
     """
 
     term: str = ""
     sort: str = ""
+    origins: tuple[str, ...] = ()
+    processes: tuple[str, ...] = ()
+    roasts: tuple[str, ...] = ()
+    sensory_notes: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)

@@ -11,6 +11,7 @@ from collections.abc import Callable
 from domain.entities.coffee import Coffee
 from domain.exceptions import ValidationError
 from domain.text import normalize_text
+from domain.value_objects.coffee_rating import CoffeeRating
 from use_cases.dtos import SearchCoffeesInput
 
 MIN_TERM_LENGTH = 2
@@ -18,8 +19,8 @@ MIN_TERM_LENGTH = 2
 
 class SearchCriterion(ABC):
     @abstractmethod
-    def matches(self, coffee: Coffee) -> bool:
-        """Diz se o café satisfaz o critério."""
+    def matches(self, coffee: Coffee, rating: CoffeeRating) -> bool:
+        """Diz se o café, com a sua nota agregada, satisfaz o critério."""
 
 
 # Cria o critério a partir do pedido; ``None`` quando o pedido não usa
@@ -38,7 +39,7 @@ class TermCriterion(SearchCriterion):
     def __init__(self, normalized_term: str) -> None:
         self._term = normalized_term
 
-    def matches(self, coffee: Coffee) -> bool:
+    def matches(self, coffee: Coffee, rating: CoffeeRating) -> bool:
         fields = (coffee.name, coffee.roaster, coffee.producer or "")
         return any(self._term in normalize_text(field) for field in fields)
 

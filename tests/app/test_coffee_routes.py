@@ -174,7 +174,7 @@ def test_home_without_matches_shows_tips_instead_of_empty_list(
     assert "Nenhum café encontrado" in html
     assert "grafia" in html
     assert "termo mais curto" in html
-    assert "filtros" in html
+    assert "Remova filtros" not in html
     assert "coffee-grid" not in html
     assert "O catálogo ainda não tem cafés" not in html
 
@@ -343,3 +343,213 @@ def test_home_unknown_sort_falls_back_to_the_default(
     assert card_order(html, "Abacaxi", "Zebra") == ["Zebra", "Abacaxi"]
     assert selected_options(html) == ["melhor-avaliados"]
     assert "<script>" not in html
+
+
+def add_attr_coffee(repository, name, origin, process=None, notes=()):
+    return repository.add(
+        Coffee(
+            name=name,
+            roaster="Café Lá",
+            origin=origin,
+            added_at=date(2026, 1, 15),
+            process=process,
+            sensory_notes=notes,
+        )
+    )
+
+
+def test_home_origin_filter_lists_coffees_of_any_marked_origin(
+    client, repository
+):  # SCRUM-13
+    add_attr_coffee(repository, "Bourbon", Origin.BRAZIL)
+    add_attr_coffee(repository, "Geisha", Origin.ETHIOPIA)
+    add_attr_coffee(repository, "Caturra", Origin.COLOMBIA)
+
+    html = client.get(
+        "/", query_string={"origem": ["Brasil", "Etiópia"]}
+    ).get_data(as_text=True)
+
+    assert "Bourbon" in html
+    assert "Geisha" in html
+    assert "Caturra" not in html
+
+
+def test_home_different_filters_combine_with_and(client, repository):
+    # SCRUM-13
+    notes = (SensoryNote.CHOCOLATE,)
+    add_attr_coffee(repository, "Alvo", Origin.BRAZIL, Process.NATURAL, notes)
+    add_attr_coffee(
+        repository, "Outro País", Origin.PERU, Process.NATURAL, notes
+    )
+    add_attr_coffee(
+        repository, "Outro Processo", Origin.BRAZIL, Process.WASHED, notes
+    )
+    add_attr_coffee(repository, "Outra Nota", Origin.BRAZIL, Process.NATURAL)
+
+    html = client.get(
+        "/",
+        query_string={
+            "origem": ["Brasil", "Etiópia"],
+            "processo": "Natural",
+            "nota": ["Chocolate", "Frutado"],
+        },
+    ).get_data(as_text=True)
+
+    assert "Alvo" in html
+    for name in ["Outro País", "Outro Processo", "Outra Nota"]:
+        assert name not in html
+
+
+def test_home_roast_filter_uses_the_torra_parameter(client, repository):
+    # SCRUM-13
+    repository.add(
+        Coffee(
+            "Claro",
+            "Café Lá",
+            Origin.PERU,
+            date(2026, 1, 1),
+            roast=Roast.LIGHT,
+        )
+    )
+    repository.add(
+        Coffee(
+            "Escuro",
+            "Café Lá",
+            Origin.PERU,
+            date(2026, 1, 1),
+            roast=Roast.DARK,
+        )
+    )
+
+    html = client.get("/?torra=Clara").get_data(as_text=True)
+
+    assert "Claro" in html
+    assert "Escuro" not in html
+
+
+def checked_values(html, param):
+    return re.findall(rf'name="{param}" value="([^"]+)" checked', html)
+
+
+def test_home_form_lists_every_filter_option_from_the_domain(client):
+    # SCRUM-13
+    html = client.get("/").get_data(as_text=True)
+
+    for param, members in [
+        ("origem", Origin),
+        ("processo", Process),
+        ("torra", Roast),
+        ("nota", SensoryNote),
+    ]:
+        for member in members:
+            assert f'name="{param}" value="{member.value}"' in html
+        assert checked_values(html, param) == []
+
+
+def test_home_filters_without_matches_show_tips_with_filter_hint(
+    client, repository
+):  # SCRUM-13
+    add_attr_coffee(repository, "Bourbon", Origin.BRAZIL, Process.WASHED)
+
+    html = client.get(
+        "/", query_string={"origem": "Brasil", "processo": "Natural"}
+    ).get_data(as_text=True)
+
+    assert "Nenhum café encontrado" in html
+    assert "grafia" in html
+    assert "Remova filtros" in html
+    assert "coffee-grid" not in html
+    assert "O catálogo ainda não tem cafés" not in html
+
+
+def test_home_keeps_the_marked_filters_checked(client, repository):
+    # SCRUM-13
+    add_attr_coffee(repository, "Bourbon", Origin.BRAZIL)
+
+    html = client.get(
+        "/",
+        query_string={
+            "origem": ["Brasil", "etiopia"],
+            "nota": "Frutado",
+            "processo": "Natural",
+            "torra": "Clara",
+        },
+    ).get_data(as_text=True)
+
+    assert checked_values(html, "origem") == ["Brasil", "Etiópia"]
+    assert checked_values(html, "nota") == ["Frutado"]
+    assert checked_values(html, "processo") == ["Natural"]
+    assert checked_values(html, "torra") == ["Clara"]
+
+
+def test_home_ignores_unknown_filter_values(client, repository):
+    # SCRUM-13
+    add_attr_coffee(repository, "Bourbon", Origin.BRAZIL)
+    add_attr_coffee(repository, "Geisha", Origin.ETHIOPIA)
+
+    response = client.get(
+        "/", query_string={"origem": ["Brasil", "<script>"], "torra": "Xis"}
+    )
+
+    html = response.get_data(as_text=True)
+    assert response.status_code == 200
+    assert "Bourbon" in html
+    assert "Geisha" not in html
+    assert checked_values(html, "origem") == ["Brasil"]
+    assert checked_values(html, "torra") == []
+    assert "<script>" not in html
+
+
+def test_home_only_unknown_filter_values_list_everything_without_hint(
+    client, repository
+):  # SCRUM-13
+    add_attr_coffee(repository, "Bourbon", Origin.BRAZIL)
+
+    html = client.get("/?origem=Atlantida").get_data(as_text=True)
+
+    assert "Bourbon" in html
+    assert "Nenhum café encontrado" not in html
+
+
+def test_home_filters_combine_with_term_and_sort_and_stay_in_the_form(
+    client, repository, tmp_path
+):  # SCRUM-13
+    add_review(
+        tmp_path, add_attr_coffee(repository, "Bourbon A", Origin.BRAZIL), 5
+    )
+    add_review(
+        tmp_path,
+        add_attr_coffee(repository, "Bourbon B", Origin.BRAZIL),
+        3,
+        3,
+        3,
+    )
+    add_attr_coffee(repository, "Bourbon C", Origin.PERU)
+    add_attr_coffee(repository, "Geisha", Origin.BRAZIL)
+
+    html = client.get(
+        "/",
+        query_string={
+            "q": "bourbon",
+            "ordenar": "mais-avaliados",
+            "origem": "Brasil",
+        },
+    ).get_data(as_text=True)
+
+    assert card_order(html, "Bourbon A", "Bourbon B") == [
+        "Bourbon B",
+        "Bourbon A",
+    ]
+    assert "Bourbon C" not in html
+    assert "Geisha" not in html
+    assert 'value="bourbon"' in html
+    assert selected_options(html) == ["mais-avaliados"]
+    assert checked_values(html, "origem") == ["Brasil"]
+
+
+def test_home_keeps_filters_checked_when_the_term_is_short(client):
+    # SCRUM-13
+    html = client.get("/?q=a&origem=Brasil").get_data(as_text=True)
+
+    assert "pelo menos 2 caracteres" in html
+    assert checked_values(html, "origem") == ["Brasil"]

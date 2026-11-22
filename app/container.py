@@ -13,7 +13,11 @@ from infra.repositories.review_repository_sqlite import (
 from infra.repositories.user_repository_sqlite import SqliteUserRepository
 from infra.security.werkzeug_password_hasher import WerkzeugPasswordHasher
 from use_cases.coffee.get_coffee_details import GetCoffeeDetails
-from use_cases.coffee.search_coffees import SearchCoffees
+from use_cases.coffee.search_coffees import (
+    DEFAULT_CRITERION_FACTORIES,
+    SearchCoffees,
+)
+from use_cases.coffee.search_filters import FILTER_CRITERION_FACTORIES
 from use_cases.coffee.search_sorting import (
     DEFAULT_SORT_STRATEGIES,
     SortStrategy,
@@ -52,6 +56,10 @@ def build_container(db_path: str | Path) -> Container:
         search_coffees=SearchCoffees(
             coffee_repository,
             review_repository,
+            criterion_factories=(
+                *DEFAULT_CRITERION_FACTORIES,
+                *FILTER_CRITERION_FACTORIES,
+            ),
             sort_strategies=sort_strategies,
         ),
         sort_strategies=sort_strategies,

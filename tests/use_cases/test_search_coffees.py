@@ -169,7 +169,7 @@ def test_search_without_a_match_returns_nothing():  # SCRUM-13
 def test_search_accepts_extra_criteria_without_changing_the_use_case():
     # SCRUM-13: OCP, filtros novos entram como novas fábricas
     class OnlyColombia(SearchCriterion):
-        def matches(self, coffee):
+        def matches(self, coffee, rating):
             return coffee.origin == Origin.COLOMBIA
 
     repository = InMemoryCoffeeRepository()
@@ -181,6 +181,27 @@ def test_search_accepts_extra_criteria_without_changing_the_use_case():
     )
 
     results = use_case.execute(SearchCoffeesInput("bourbon"))
+
+    assert [r.name for r in results] == ["Bourbon"]
+
+
+def test_search_criterion_receives_the_aggregate_rating():
+    # SCRUM-13: a interface já recebe a nota, para filtros por nota
+    class OnlyRated(SearchCriterion):
+        def matches(self, coffee, rating):
+            return rating.count > 0
+
+    repository = InMemoryCoffeeRepository()
+    reviews = InMemoryReviewRepository()
+    rate(reviews, add_coffee(repository, "Bourbon"), 4)
+    add_coffee(repository, "Geisha")
+    use_case = make_search(
+        repository,
+        reviews,
+        criterion_factories=(lambda search: OnlyRated(),),
+    )
+
+    results = use_case.execute(SearchCoffeesInput())
 
     assert [r.name for r in results] == ["Bourbon"]
 

@@ -1,6 +1,6 @@
 # 11: Filtros por origem, processo, torra e nota sensorial
 
-**Status:** ready-for-agent
+**Status:** done
 
 **Jira:** SCRUM-13
 **Histórias da spec:** 29 a 31, 34 (termo, filtros e ordenação) e 43
@@ -25,22 +25,22 @@ continuam marcados na página de resultados.
 
 **Critérios de aceite:**
 
-- [ ] Marcar Brasil e Etiópia mostra os cafés de qualquer um dos dois
+- [x] Marcar Brasil e Etiópia mostra os cafés de qualquer um dos dois
       países.
-- [ ] (Brasil OU Etiópia) E Natural E (Chocolate OU Frutado) mostra só
+- [x] (Brasil OU Etiópia) E Natural E (Chocolate OU Frutado) mostra só
       os cafés que atendem aos três critérios.
-- [ ] Um café sem processo, torra ou notas sensoriais não passa num
+- [x] Um café sem processo, torra ou notas sensoriais não passa num
       filtro desse atributo.
-- [ ] Os filtros combinam com o termo e com a ordenação na mesma busca.
-- [ ] Os valores marcados continuam marcados na página de resultados.
+- [x] Os filtros combinam com o termo e com a ordenação na mesma busca.
+- [x] Os valores marcados continuam marcados na página de resultados.
       Valores desconhecidos no endereço são ignorados.
-- [ ] Uma combinação sem resultados mostra a mensagem com dicas do
+- [x] Uma combinação sem resultados mostra a mensagem com dicas do
       ticket 09.
-- [ ] Testes de `SearchCoffees`, citando SCRUM-13, só com fakes: cada
+- [x] Testes de `SearchCoffees`, citando SCRUM-13, só com fakes: cada
       filtro sozinho, vários valores no mesmo filtro (OU), filtros
       diferentes (E), filtros com termo e ordenação, café com atributo
       vazio e nenhum resultado.
-- [ ] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
+- [x] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
       passam.
 
 **Fora deste ticket:** filtro de nota mínima (ticket 12).

@@ -1,7 +1,14 @@
 from app.presenters.catalog_presenter import (
+    FILTER_FIELDS,
+    has_active_filters,
     present_cards,
+    present_filter_groups,
     present_sort_options,
 )
+from domain.value_objects.origin import Origin
+from domain.value_objects.process import Process
+from domain.value_objects.roast import Roast
+from domain.value_objects.sensory_note import SensoryNote
 from tests.app.test_coffee_presenter import make_rating
 from use_cases.coffee.search_sorting import (
     BestRated,
@@ -66,3 +73,59 @@ def test_sort_options_mark_the_default_for_unknown_values():  # SCRUM-13
         options = present_sort_options(STRATEGIES, chosen)
 
         assert [o.id for o in options if o.selected] == ["melhor-avaliados"]
+
+
+def test_filter_groups_list_the_options_of_each_domain_set():  # SCRUM-13
+    groups = present_filter_groups({})
+
+    options = {g.param: [o.value for o in g.options] for g in groups}
+    assert [g.label for g in groups] == [
+        "Origem",
+        "Processo",
+        "Torra",
+        "Nota sensorial",
+    ]
+    assert options == {
+        "origem": [m.value for m in Origin],
+        "processo": [m.value for m in Process],
+        "torra": [m.value for m in Roast],
+        "nota": [m.value for m in SensoryNote],
+    }
+    assert not any(o.checked for g in groups for o in g.options)
+
+
+def test_filter_groups_check_the_selected_values():  # SCRUM-13
+    groups = present_filter_groups(
+        {"origem": ["Brasil", "etiopia"], "nota": ["Frutado"]}
+    )
+
+    checked = {
+        g.param: [o.value for o in g.options if o.checked] for g in groups
+    }
+    assert checked == {
+        "origem": ["Brasil", "Etiópia"],
+        "processo": [],
+        "torra": [],
+        "nota": ["Frutado"],
+    }
+
+
+def test_filter_groups_ignore_unknown_selected_values():  # SCRUM-13
+    groups = present_filter_groups({"origem": ["Atlântida"], "torra": [""]})
+
+    assert not has_active_filters(groups)
+
+
+def test_has_active_filters_is_true_with_any_checked_option():
+    # SCRUM-13
+    assert has_active_filters(present_filter_groups({"torra": ["Clara"]}))
+    assert not has_active_filters(present_filter_groups({}))
+
+
+def test_filter_fields_name_the_search_input_attributes():  # SCRUM-13
+    assert {f.param: f.input_field for f in FILTER_FIELDS} == {
+        "origem": "origins",
+        "processo": "processes",
+        "torra": "roasts",
+        "nota": "sensory_notes",
+    }

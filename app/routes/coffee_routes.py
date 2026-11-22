@@ -5,7 +5,10 @@ from collections.abc import Sequence
 from flask import Blueprint, render_template, request
 
 from app.presenters.catalog_presenter import (
+    FILTER_FIELDS,
+    has_active_filters,
     present_cards,
+    present_filter_groups,
     present_sort_options,
 )
 from app.routes.coffee_page import render_coffee_page
@@ -32,8 +35,18 @@ def create_coffee_blueprint(
     def index() -> str:
         term = request.args.get("q", "")
         sort = request.args.get(SORT_PARAM, "")
+        selected = {
+            field.param: tuple(request.args.getlist(field.param))
+            for field in FILTER_FIELDS
+        }
+        filters = {
+            field.input_field: selected[field.param] for field in FILTER_FIELDS
+        }
+        filter_groups = present_filter_groups(selected)
         try:
-            coffees = search_coffees.execute(SearchCoffeesInput(term, sort))
+            coffees = search_coffees.execute(
+                SearchCoffeesInput(term, sort, **filters)
+            )
             warning = None
         except ValidationError as error:
             coffees, warning = [], str(error)
@@ -44,6 +57,8 @@ def create_coffee_blueprint(
             warning=warning,
             sort_param=SORT_PARAM,
             sort_options=present_sort_options(sort_strategies, sort),
+            filter_groups=filter_groups,
+            has_filters=has_active_filters(filter_groups),
         )
 
     @blueprint.get("/cafes/<int:coffee_id>")

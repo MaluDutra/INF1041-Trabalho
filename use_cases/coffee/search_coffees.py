@@ -50,18 +50,22 @@ class SearchCoffees:
             for factory in self._criterion_factories
             if (criterion := factory(search)) is not None
         ]
-        matching = [
-            coffee
-            for coffee in self._coffee_repository.list_all()
-            if all(criterion.matches(coffee) for criterion in criteria)
-        ]
+        catalog = self._coffee_repository.list_all()
         grouped = self._review_repository.list_ratings_by_coffees(
-            [coffee.id for coffee in matching]
+            [coffee.id for coffee in catalog]
         )
         ratings = {
             coffee.id: CoffeeRating.from_ratings(grouped.get(coffee.id, []))
-            for coffee in matching
+            for coffee in catalog
         }
+        matching = [
+            coffee
+            for coffee in catalog
+            if all(
+                criterion.matches(coffee, ratings[coffee.id])
+                for criterion in criteria
+            )
+        ]
         strategy = self._sort_strategies.get(search.sort, self._default_sort)
         matching.sort(key=lambda c: strategy.key(c, ratings[c.id]))
         return [

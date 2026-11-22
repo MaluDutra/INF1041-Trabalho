@@ -13,6 +13,16 @@
     <option value="{{ option.id }}"{% if option.selected %} selected{% endif %}>{{ option.label }}</option>
     {% endfor %}
   </select>
+  <div class="filters">
+    {% for group in filter_groups %}
+    <fieldset class="filter-group">
+      <legend>{{ group.label }}</legend>
+      {% for option in group.options %}
+      <label class="filter-option"><input type="checkbox" name="{{ group.param }}" value="{{ option.value }}"{% if option.checked %} checked{% endif %}> {{ option.value }}</label>
+      {% endfor %}
+    </fieldset>
+    {% endfor %}
+  </div>
   <button type="submit">Buscar</button>
 </form>
 {% if warning %}
@@ -28,14 +38,16 @@
   </li>
   {% endfor %}
 </ul>
-{% elif term.strip() %}
+{% elif term.strip() or has_filters %}
 <section class="no-results">
   <h2>Nenhum café encontrado</h2>
   <p>Que tal ajustar a busca?</p>
   <ul>
     <li>Confira a grafia do termo.</li>
     <li>Use um termo mais curto.</li>
-    <li>Remova filtros, se houver algum marcado.</li>
+    {% if has_filters %}
+    <li>Remova filtros para ampliar o resultado.</li>
+    {% endif %}
   </ul>
 </section>
 {% else %}

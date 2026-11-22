@@ -45,6 +45,17 @@ CREATE TABLE IF NOT EXISTS users (
     email TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS reviews (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users (id),
+    coffee_id INTEGER NOT NULL REFERENCES coffees (id),
+    rating INTEGER NOT NULL,
+    text TEXT,
+    created_at TEXT NOT NULL,
+    edited INTEGER NOT NULL DEFAULT 0,
+    UNIQUE (user_id, coffee_id)
+);
 """
 
 

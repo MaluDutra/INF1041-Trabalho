@@ -53,6 +53,69 @@
     {% endif %}
   </section>
 
+  <section class="reviews">
+    <h2>Avaliações</h2>
+
+    {% if review_error %}
+    <p class="form-error" role="alert">{{ review_error }}</p>
+    {% endif %}
+
+    {% if coffee.user_has_reviewed %}
+    <p><a class="button" href="#minha-avaliacao">Editar minha avaliação</a></p>
+    {% elif current_user %}
+    <details id="avaliar" class="review-form-box"
+             {% if open_form %}open{% endif %}>
+      <summary class="button">Avaliar</summary>
+      <form method="post"
+            action="{{ url_for('reviews.create', coffee_id=coffee.id) }}"
+            class="form">
+        <fieldset class="rating-field">
+          <legend>Nota</legend>
+          {% for value in rating_scale %}
+          <label>
+            <input type="radio" name="rating" value="{{ value }}" required
+                   {% if review_form.get('rating') == value|string %}checked{% endif %}>
+            {{ value }}
+          </label>
+          {% endfor %}
+        </fieldset>
+
+        <label for="review-text">Texto (opcional)</label>
+        <textarea id="review-text" name="text" rows="4">{{ review_form.get('text', '') }}</textarea>
+        <p class="hint">Até 1000 caracteres.</p>
+
+        <button type="submit">Publicar avaliação</button>
+      </form>
+    </details>
+    {% else %}
+    <p>
+      <a class="button"
+         href="{{ url_for('reviews.review_form', coffee_id=coffee.id) }}">Avaliar</a>
+    </p>
+    {% endif %}
+
+    {% if coffee.reviews_empty_message %}
+    <p>{{ coffee.reviews_empty_message }}</p>
+    {% else %}
+    <ul class="review-list">
+      {% for review in coffee.reviews %}
+      <li class="review{% if review.is_own %} review-own{% endif %}"
+          {% if review.is_own %}id="minha-avaliacao"{% endif %}>
+        <p class="review-meta">
+          <span class="review-rating">{{ review.rating_label }}</span>
+          <span class="review-author">{{ review.author_name }}</span>
+          <span class="review-date">{{ review.date }}</span>
+          {% if review.is_own %}<span class="review-badge">Sua avaliação</span>{% endif %}
+        </p>
+        {% if review.text %}
+        <p class="review-text">{{ review.text }}</p>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </section>
+
   <p><a href="{{ url_for('coffees.index') }}">Voltar ao catálogo</a></p>
 </article>
 {% endblock %}

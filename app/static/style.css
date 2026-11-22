@@ -174,3 +174,74 @@ body {
   background: #fdecea;
   color: #7a1712;
 }
+
+.button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 0.3rem;
+  background: #4a2c17;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.review-form-box summary {
+  list-style: none;
+}
+
+.review-form-box[open] summary {
+  margin-bottom: 0.8rem;
+}
+
+.rating-field {
+  display: flex;
+  gap: 1rem;
+  border: 1px solid #e3d5c6;
+  border-radius: 0.3rem;
+}
+
+.form textarea {
+  padding: 0.5rem;
+  border: 1px solid #e3d5c6;
+  border-radius: 0.3rem;
+  font: inherit;
+}
+
+.review-list {
+  padding: 0;
+  list-style: none;
+}
+
+.review {
+  margin-bottom: 0.8rem;
+  padding: 0.8rem 1rem;
+  background: #fff;
+  border: 1px solid #e3d5c6;
+  border-radius: 0.5rem;
+}
+
+.review-own {
+  border-color: #4a2c17;
+  background: #f4e9dc;
+}
+
+.review p {
+  margin: 0.2rem 0;
+}
+
+.review-rating {
+  font-weight: bold;
+}
+
+.review-date {
+  color: #6b4a33;
+  font-size: 0.9rem;
+}
+
+.review-badge {
+  padding: 0.1rem 0.5rem;
+  border-radius: 1rem;
+  background: #4a2c17;
+  color: #fff;
+  font-size: 0.8rem;
+}

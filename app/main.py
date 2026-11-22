@@ -9,6 +9,7 @@ from flask import Flask, render_template
 from app.container import build_container
 from app.routes.auth_routes import create_auth_blueprint
 from app.routes.coffee_routes import create_coffee_blueprint
+from app.routes.review_routes import create_review_blueprint
 from infra.db.seed import init_database
 
 NOT_FOUND_PAGE = "Página não encontrada."
@@ -35,6 +36,12 @@ def create_app(config: dict | None = None) -> Flask:
     app.register_blueprint(
         create_coffee_blueprint(
             container.search_coffees, container.get_coffee_details
+        )
+    )
+
+    app.register_blueprint(
+        create_review_blueprint(
+            container.create_review, container.get_coffee_details
         )
     )
 

@@ -17,8 +17,8 @@ flask --app app.main run --debug  # sobe a aplicação em http://127.0.0.1:5000
 O `init-db` roda sobre um banco vazio: se o banco já tem cafés, nada é
 alterado. O arquivo do banco fica em `instance/cafeteca.db`. Se ele foi
 criado antes da issue 02 (schema antigo), apague o arquivo e rode o
-`init-db` de novo. A tabela `users` (issue 03) é criada pelo `init-db` mesmo
-em um banco que já tem cafés, sem apagar nada.
+`init-db` de novo. As tabelas `users` (issue 03) e `reviews` (issue 05) são
+criadas pelo `init-db` mesmo em um banco que já tem cafés, sem apagar nada.
 
 A sessão do Flask é assinada com a chave `CAFETECA_SECRET_KEY`. Sem a
 variável de ambiente, vale uma chave fixa de desenvolvimento: defina a

@@ -2,9 +2,12 @@
 
 from dataclasses import dataclass
 
-from use_cases.dtos import CoffeeDetailsDTO
+from app.presenters.date_presenter import format_date
+from domain.entities.review import RATING_SCALE
+from use_cases.dtos import CoffeeDetailsDTO, ReviewDTO
 
 NOT_INFORMED = "Não informado"
+NO_REVIEWS = "Ainda não há avaliações."
 
 
 @dataclass(frozen=True)
@@ -13,6 +16,16 @@ class BrewRecommendationView:
     ratio: str
     grind: str
     temperature: str
+
+
+@dataclass(frozen=True)
+class ReviewView:
+    rating: int
+    rating_label: str
+    author_name: str
+    date: str
+    text: str | None
+    is_own: bool
 
 
 @dataclass(frozen=True)
@@ -31,6 +44,9 @@ class CoffeeDetailsView:
     story: str
     brew_recommendations: tuple[BrewRecommendationView, ...]
     brew_empty_message: str | None
+    reviews: tuple[ReviewView, ...]
+    reviews_empty_message: str | None
+    user_has_reviewed: bool
 
 
 def present_details(details: CoffeeDetailsDTO) -> CoffeeDetailsView:
@@ -59,6 +75,20 @@ def present_details(details: CoffeeDetailsDTO) -> CoffeeDetailsView:
         brew_empty_message=(
             None if details.brew_recommendations else NOT_INFORMED
         ),
+        reviews=tuple(_present_review(review) for review in details.reviews),
+        reviews_empty_message=None if details.reviews else NO_REVIEWS,
+        user_has_reviewed=details.user_has_reviewed,
+    )
+
+
+def _present_review(review: ReviewDTO) -> ReviewView:
+    return ReviewView(
+        rating=review.rating,
+        rating_label=f"{review.rating} de {max(RATING_SCALE)}",
+        author_name=review.author_name,
+        date=format_date(review.created_at),
+        text=review.text,
+        is_own=review.is_own,
     )
 
 

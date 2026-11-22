@@ -7,10 +7,15 @@
 {% if error %}
 <p class="form-error" role="alert">
   {{ error }}
-  {% if login_path %}<a href="{{ login_path }}">Entrar</a>{% endif %}
+  {% if show_login_link %}
+  <a href="{{ url_for('auth.login_form', next=next_url) }}">Entrar</a>
+  {% endif %}
 </p>
 {% endif %}
 <form method="post" action="{{ url_for('auth.signup') }}" class="form">
+  {% if next_url %}
+  <input type="hidden" name="next" value="{{ next_url }}">
+  {% endif %}
   <label for="display_name">Nome de exibição</label>
   <input id="display_name" name="display_name" type="text" required
          value="{{ form.get('display_name', '') }}">

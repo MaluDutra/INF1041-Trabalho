@@ -56,6 +56,14 @@ class RegisterUserInput:
 
 
 @dataclass(frozen=True)
+class AuthenticateUserInput:
+    """Dados do formulário de login; a senha ainda em texto."""
+
+    email: str
+    password: str
+
+
+@dataclass(frozen=True)
 class UserDTO:
     """Usuário como as camadas externas o enxergam.
 

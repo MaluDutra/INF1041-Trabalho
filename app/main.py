@@ -26,7 +26,11 @@ def create_app(config: dict | None = None) -> Flask:
 
     container = build_container(app.config["DATABASE"])
     app.register_blueprint(
-        create_auth_blueprint(container.register_user, container.get_user)
+        create_auth_blueprint(
+            container.register_user,
+            container.authenticate_user,
+            container.get_user,
+        )
     )
     app.register_blueprint(
         create_coffee_blueprint(

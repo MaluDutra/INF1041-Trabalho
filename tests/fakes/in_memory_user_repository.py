@@ -23,5 +23,11 @@ class InMemoryUserRepository(UserRepository):
     def get_by_id(self, user_id: int) -> User | None:
         return self._users.get(user_id)
 
+    def get_by_email(self, email: str) -> User | None:
+        for user in self._users.values():
+            if user.email == email:
+                return user
+        return None
+
     def list_all(self) -> list[User]:
         return list(self._users.values())

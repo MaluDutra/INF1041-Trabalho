@@ -30,11 +30,17 @@ class SqliteUserRepository(UserRepository):
         return replace(user, id=cursor.lastrowid)
 
     def get_by_id(self, user_id: int) -> User | None:
+        return self._find("id = ?", user_id)
+
+    def get_by_email(self, email: str) -> User | None:
+        return self._find("email = ?", email)
+
+    def _find(self, condition: str, value: int | str) -> User | None:
         with closing(connect(self._db_path)) as connection:
             row = connection.execute(
                 "SELECT id, display_name, email, password_hash"
-                " FROM users WHERE id = ?",
-                (user_id,),
+                f" FROM users WHERE {condition}",
+                (value,),
             ).fetchone()
         if row is None:
             return None

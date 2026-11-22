@@ -16,3 +16,10 @@ class UserRepository(ABC):
     @abstractmethod
     def get_by_id(self, user_id: int) -> User | None:
         """Devolve o usuário com o id dado, ou ``None`` se não existir."""
+
+    @abstractmethod
+    def get_by_email(self, email: str) -> User | None:
+        """Devolve o usuário com o e-mail dado, ou ``None``.
+
+        O e-mail deve vir normalizado (minúsculas, sem espaços).
+        """

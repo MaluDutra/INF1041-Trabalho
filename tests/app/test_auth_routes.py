@@ -1,8 +1,11 @@
 """Rotas de cadastro e logout, com Flask e SQLite temporário."""
 
+from urllib.parse import parse_qs, urlsplit
+
 import pytest
 
 from app.main import create_app
+from app.routes.login_required import login_required
 from infra.db.database import connect, init_schema
 
 
@@ -169,3 +172,172 @@ def test_stale_session_of_a_missing_user_is_ignored(client):  # SCRUM-11
 
     assert response.status_code == 200
     assert "Sair" not in response.get_data(as_text=True)
+
+
+def fresh_client(db_path):
+    """Cliente sem cookies, sobre o mesmo banco (um visitante novo)."""
+    app = create_app({"DATABASE": str(db_path), "SECRET_KEY": "test"})
+    return app.test_client()
+
+
+@pytest.fixture
+def registered(client, db_path):
+    """Usuário Ana já cadastrado; devolve um visitante sem sessão."""
+    sign_up(client)
+    return fresh_client(db_path)
+
+
+def log_in(client, **overrides):
+    form = {"email": "ana@x.com", "password": "abcd1234"}
+    form.update(overrides)
+    return client.post("/entrar", data=form)
+
+
+def test_login_form_is_shown_to_visitors(client):  # SCRUM-11
+    response = client.get("/entrar")
+
+    html = response.get_data(as_text=True)
+    assert response.status_code == 200
+    assert 'name="email"' in html
+    assert 'type="password"' in html
+    assert 'href="/cadastro"' in html
+
+
+def test_valid_login_shows_the_display_name(registered):  # SCRUM-11
+    response = log_in(registered)
+
+    assert response.status_code == 302
+    assert response.headers["Location"] == "/"
+    html = registered.get("/").get_data(as_text=True)
+    assert "Ana" in html
+    assert "Sair" in html
+    with registered.session_transaction() as session:
+        assert dict(session) == {"user_id": 1}
+
+
+def test_login_ignores_email_case_and_edge_spaces(registered):  # SCRUM-11
+    response = log_in(registered, email="  ANA@x.Com ")
+
+    assert response.status_code == 302
+    assert "Sair" in registered.get("/").get_data(as_text=True)
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [{"password": "errada123"}, {"email": "outra@x.com"}],
+    ids=["wrong-password", "unknown-email"],
+)
+def test_failed_login_shows_the_generic_message(
+    registered, overrides
+):  # SCRUM-11
+    response = log_in(registered, **overrides)
+
+    html = response.get_data(as_text=True)
+    assert response.status_code == 200
+    assert "E-mail ou senha incorretos." in html
+    assert "Sair" not in registered.get("/").get_data(as_text=True)
+
+
+def test_failed_login_keeps_the_email_but_never_the_password(
+    registered,
+):  # SCRUM-11
+    response = log_in(registered, email="ana@x.com", password="errada123")
+
+    html = response.get_data(as_text=True)
+    assert 'value="ana@x.com"' in html
+    assert "errada123" not in html
+
+
+def test_login_goes_back_to_the_requested_coffee(registered):  # SCRUM-11
+    form = registered.get("/entrar?next=/cafes/1").get_data(as_text=True)
+    assert 'name="next" value="/cafes/1"' in form
+
+    response = log_in(registered, next="/cafes/1")
+
+    assert response.headers["Location"] == "/cafes/1"
+
+
+def test_failed_login_keeps_the_next(registered):  # SCRUM-11
+    response = log_in(registered, password="errada123", next="/cafes/1")
+
+    assert 'name="next" value="/cafes/1"' in response.get_data(as_text=True)
+
+
+@pytest.mark.parametrize(
+    "target",
+    [
+        "https://exemplo.com",
+        "//exemplo.com",
+        r"/\exemplo.com",
+        "/\t/exemplo.com",
+        "///exemplo.com",
+        "javascript:alert(1)",
+        "cafes/1",
+        "",
+    ],
+)
+def test_login_ignores_a_next_that_is_not_an_internal_path(
+    registered, target
+):  # SCRUM-11
+    form = registered.get("/entrar", query_string={"next": target})
+    assert 'name="next"' not in form.get_data(as_text=True)
+
+    response = log_in(registered, next=target)
+
+    assert response.headers["Location"] == "/"
+
+
+def test_login_page_signup_link_keeps_the_next(client):  # SCRUM-11
+    html = client.get("/entrar?next=/cafes/1").get_data(as_text=True)
+
+    assert 'href="/cadastro?next=/cafes/1"' in html
+
+
+def test_signup_with_next_goes_back_to_it(client):  # SCRUM-11
+    form = client.get("/cadastro?next=/cafes/1").get_data(as_text=True)
+    assert 'name="next" value="/cafes/1"' in form
+
+    response = sign_up(client, next="/cafes/1")
+
+    assert response.status_code == 302
+    assert response.headers["Location"] == "/cafes/1"
+
+
+def test_signup_ignores_an_external_next(client):  # SCRUM-11
+    response = sign_up(client, next="//exemplo.com")
+
+    assert response.headers["Location"] == "/"
+
+
+def test_duplicate_email_login_link_keeps_the_next(
+    client, db_path
+):  # SCRUM-11
+    sign_up(client)
+
+    response = sign_up(
+        fresh_client(db_path), email="ana@x.com", next="/cafes/1"
+    )
+
+    html = response.get_data(as_text=True)
+    assert 'href="/entrar?next=/cafes/1"' in html
+    assert 'name="next" value="/cafes/1"' in html
+
+
+def test_login_required_sends_visitors_to_login_with_next(db_path):
+    app = create_app({"DATABASE": str(db_path), "SECRET_KEY": "test"})
+
+    @app.get("/privado")
+    @login_required
+    def private() -> str:
+        return "segredo"
+
+    client = app.test_client()
+
+    response = client.get("/privado?x=1")
+
+    assert response.status_code == 302
+    location = urlsplit(response.headers["Location"])
+    assert location.path == "/entrar"
+    assert parse_qs(location.query) == {"next": ["/privado?x=1"]}
+    sign_up(client)
+    assert client.get("/privado").get_data(as_text=True) == "segredo"

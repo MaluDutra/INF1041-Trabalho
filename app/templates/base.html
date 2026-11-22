@@ -16,6 +16,7 @@
         <button type="submit" class="link-button">Sair</button>
       </form>
       {% else %}
+      <a href="{{ url_for('auth.login_form') }}">Entrar</a>
       <a href="{{ url_for('auth.signup_form') }}">Criar conta</a>
       {% endif %}
     </nav>

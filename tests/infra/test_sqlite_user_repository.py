@@ -61,3 +61,13 @@ def test_database_stores_the_hash_and_normalized_email(
     assert row["email"] == "ana@x.com"
     assert row["password_hash"] == "hash-da-ana"
     assert list(row.keys()) == ["id", "display_name", "email", "password_hash"]
+
+
+def test_get_by_email_finds_the_stored_user(repository):  # SCRUM-11
+    stored = repository.add(make_user())
+
+    assert repository.get_by_email("ana@x.com") == stored
+
+
+def test_get_by_email_returns_none_for_unknown_email(repository):
+    assert repository.get_by_email("ninguem@x.com") is None  # SCRUM-11

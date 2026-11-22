@@ -56,8 +56,13 @@ class User:
         return name
 
     @staticmethod
+    def normalize_email(value: str) -> str:
+        """Põe o e-mail em minúsculas e tira os espaços das pontas."""
+        return value.strip().lower() if isinstance(value, str) else ""
+
+    @staticmethod
     def _parse_email(value: str) -> str:
-        email = value.strip().lower() if isinstance(value, str) else ""
+        email = User.normalize_email(value)
         if not _EMAIL_PATTERN.fullmatch(email):
             raise ValidationError("Informe um e-mail válido.")
         return email

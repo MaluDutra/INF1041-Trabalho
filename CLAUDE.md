@@ -238,3 +238,15 @@ pre-commit run --all-files         # roda todos os hooks
 - Uso de IA (bônus): registrar no README onde e como o Claude foi usado e qual foi a
   estratégia (por exemplo: geração de esqueleto e testes a partir dos critérios de
   aceitação, sempre com revisão humana).
+
+## Agent skills
+
+### Issue tracker
+
+Specs e issues ficam em arquivos markdown locais em `.scratch/` (não usar
+GitHub Issues nem `gh`). Veja `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+Single-context: um `GLOSSARY.md` e `docs/adr/` na raiz. Veja
+`docs/agents/domain.md`.

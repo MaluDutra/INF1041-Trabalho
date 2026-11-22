@@ -57,10 +57,12 @@ def create_app(config: dict | None = None) -> Flask:
 
     @app.cli.command("init-db")
     def init_db_command() -> None:
-        """Cria o banco e carrega o catálogo inicial (banco vazio)."""
+        """Cria o banco e carrega o catálogo e os dados de demonstração."""
         Path(app.config["DATABASE"]).parent.mkdir(parents=True, exist_ok=True)
         if init_database(app.config["DATABASE"]):
-            click.echo("Banco criado e catálogo inicial carregado.")
+            click.echo(
+                "Banco criado com catálogo, usuários e reviews de demo."
+            )
         else:
             click.echo("O banco já tem cafés; nada foi alterado.")
 

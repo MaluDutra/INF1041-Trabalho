@@ -10,6 +10,7 @@ from domain.value_objects.process import Process
 from domain.value_objects.roast import Roast
 from domain.value_objects.sensory_note import SensoryNote
 from infra.db.database import connect, init_schema
+from infra.db.seed_demo import seed_demo_reviews, seed_demo_users
 from infra.repositories.coffee_repository_sqlite import (
     SqliteCoffeeRepository,
 )
@@ -370,4 +371,6 @@ def init_database(db_path: str | Path) -> bool:
     if repository.list_all():
         return False
     seed_catalog(repository)
+    seed_demo_users(db_path)
+    seed_demo_reviews(db_path)
     return True

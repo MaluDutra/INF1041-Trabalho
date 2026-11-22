@@ -1,6 +1,6 @@
 # 14: README com arquitetura, SOLID e uso de IA
 
-**Status:** ready-for-agent
+**Status:** done
 
 **Jira:** épico SCRUM-7 (entrega do A2)
 **Histórias da spec:** nenhuma diretamente. Cobre os critérios de
@@ -36,17 +36,21 @@ usada.
 
 **Critérios de aceite:**
 
-- [ ] Uma pessoa sem contexto consegue, seguindo só o README, instalar,
+- [x] Uma pessoa sem contexto consegue, seguindo só o README, instalar,
       inicializar o banco, subir a aplicação e entrar com um usuário de
       demonstração.
-- [ ] Cada princípio SOLID cita pelo menos uma classe ou módulo real do
+- [x] Cada princípio SOLID cita pelo menos uma classe ou módulo real do
       código e explica em uma ou duas frases por que ele aplica o
       princípio.
-- [ ] A seção de arquitetura explica a regra de dependência e diz como o
+- [x] A seção de arquitetura explica a regra de dependência e diz como o
       `lint-imports` a verifica.
 - [ ] A seção de uso de IA descreve as etapas em que o Claude foi usado e
       como o grupo revisou o resultado.
-- [ ] `pytest --cov` mostra cobertura de pelo menos 70% em `domain` e
+- [x] `pytest --cov` mostra cobertura de pelo menos 70% em `domain` e
       `use_cases`, e o número está registrado no README.
-- [ ] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
+- [x] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
       passam.
+
+Pendente (não marcado): o critério de uso de IA depende do grupo confirmar
+como foi a revisão humana. O README descreve as etapas e deixa comentários
+`<!-- CONFIRMAR: ... -->` nos pontos a confirmar.

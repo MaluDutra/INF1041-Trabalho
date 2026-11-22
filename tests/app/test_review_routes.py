@@ -359,3 +359,87 @@ def test_author_email_never_appears_for_visitors(client, coffee):
 
     assert "Ana" in html
     assert "ana@x.com" not in html
+
+
+def sign_in_new_user(client, name, email):
+    client.post("/sair")
+    sign_up(client, name=name, email=email)
+
+
+def test_page_without_reviews_shows_no_reviews_and_an_empty_histogram(
+    client, coffee
+):  # SCRUM-19
+    html = page(client, coffee)
+
+    assert "Sem avaliações" in html
+    assert "★ ·" not in html
+    assert html.count('class="histogram-row"') == 5
+    assert html.count(">0%<") == 5
+
+
+def test_single_review_shows_the_average_with_one_decimal(
+    client, coffee
+):  # SCRUM-19
+    sign_up(client)
+    client.post(review_url(coffee), data={"rating": "1"})
+
+    html = page(client, coffee)
+
+    assert "1,0 ★ · 1 avaliação" in html
+    assert "1,0 ★ · 1 avaliações" not in html
+    assert "Sem avaliações" not in html
+
+
+def test_aggregate_and_histogram_update_after_a_new_review(
+    client, coffee
+):  # SCRUM-19
+    sign_up(client)
+    client.post(review_url(coffee), data={"rating": "5"})
+    assert "5,0 ★ · 1 avaliação" in page(client, coffee)
+
+    sign_in_new_user(client, "Bia", "bia@x.com")
+    client.post(review_url(coffee), data={"rating": "4"})
+    html = page(client, coffee)
+
+    assert "4,5 ★ · 2 avaliações" in html
+    assert re.findall(r'class="histogram-label">([^<]+)<', html) == [
+        "5★",
+        "4★",
+        "3★",
+        "2★",
+        "1★",
+    ]
+    assert re.findall(r'class="histogram-percentage">([^<]+)<', html) == [
+        "50%",
+        "50%",
+        "0%",
+        "0%",
+        "0%",
+    ]
+
+
+def test_page_follows_spec_then_rating_then_review_order(
+    client, coffee
+):  # SCRUM-19
+    sign_up(client)
+    client.post(review_url(coffee), data={"rating": "4"})
+
+    html = page(client, coffee)
+
+    spec = html.index("Ficha técnica")
+    rating = html.index("4,0 ★ · 1 avaliação")
+    button = html.index("Editar minha avaliação")
+    reviews = html.index("4 de 5")
+    assert spec < rating < button < reviews
+
+
+def test_visitor_sees_the_review_button_before_the_reviews(
+    client, coffee
+):  # SCRUM-19
+    html = page(client, coffee)
+
+    assert (
+        html.index("Sem avaliações")
+        < html.index(f'href="{review_url(coffee)}"')
+        < html.index("Ainda não há avaliações")
+    )

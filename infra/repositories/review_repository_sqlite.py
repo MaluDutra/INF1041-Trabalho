@@ -60,6 +60,14 @@ class SqliteReviewRepository(ReviewRepository):
             ).fetchall()
         return [self._to_review(row) for row in rows]
 
+    def list_ratings_by_coffee(self, coffee_id: int) -> list[int]:
+        with closing(connect(self._db_path)) as connection:
+            rows = connection.execute(
+                "SELECT rating FROM reviews WHERE coffee_id = ?",
+                (coffee_id,),
+            ).fetchall()
+        return [row["rating"] for row in rows]
+
     @staticmethod
     def _to_review(row: sqlite3.Row) -> Review:
         return Review(

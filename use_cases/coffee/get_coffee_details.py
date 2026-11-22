@@ -3,18 +3,26 @@
 from domain.entities.coffee import Coffee
 from domain.entities.review import Review
 from domain.exceptions import NotFoundError
-from use_cases.dtos import BrewRecommendationDTO, CoffeeDetailsDTO, ReviewDTO
+from domain.value_objects.coffee_rating import CoffeeRating
+from use_cases.dtos import (
+    BrewRecommendationDTO,
+    CoffeeDetailsDTO,
+    CoffeeRatingDTO,
+    ReviewDTO,
+)
 from use_cases.ports.coffee_repository import CoffeeRepository
 from use_cases.ports.review_repository import ReviewRepository
 from use_cases.ports.user_repository import UserRepository
+from use_cases.review.rating_dto import to_rating_dto
 
 
 class GetCoffeeDetails:
-    """Devolve o café e seus reviews, ou lança ``NotFoundError``.
+    """Devolve o café, seus reviews e a nota agregada.
 
-    Os reviews vêm do mais recente para o mais antigo, com o do usuário
-    logado (se ``user_id`` for dado) em primeiro. A nota agregada entra
-    no próximo ticket.
+    Lança ``NotFoundError`` se o café não existe. Os reviews vêm do mais
+    recente para o mais antigo, com o do usuário logado (se ``user_id``
+    for dado) em primeiro. A nota agregada é calculada a cada leitura a
+    partir desses mesmos reviews (SCRUM-19).
     """
 
     def __init__(
@@ -34,8 +42,10 @@ class GetCoffeeDetails:
         if coffee is None:
             raise NotFoundError("Café não encontrado.")
         reviews = self._ordered_reviews(coffee_id, user_id)
+        rating = CoffeeRating.from_ratings(r.rating for r in reviews)
         return self._to_dto(
             coffee,
+            to_rating_dto(rating),
             tuple(self._to_review_dto(r, user_id) for r in reviews),
             user_has_reviewed=any(r.author_id == user_id for r in reviews),
         )
@@ -67,6 +77,7 @@ class GetCoffeeDetails:
     @staticmethod
     def _to_dto(
         coffee: Coffee,
+        rating: CoffeeRatingDTO,
         reviews: tuple[ReviewDTO, ...],
         user_has_reviewed: bool,
     ) -> CoffeeDetailsDTO:
@@ -92,6 +103,7 @@ class GetCoffeeDetails:
                 )
                 for brew in coffee.brew_recommendations
             ),
+            rating=rating,
             reviews=reviews,
             user_has_reviewed=user_has_reviewed,
         )

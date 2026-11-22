@@ -1,5 +1,6 @@
 from dataclasses import FrozenInstanceError
 from datetime import date, datetime
+from decimal import Decimal
 
 import pytest
 
@@ -253,3 +254,27 @@ def test_review_dto_does_not_expose_the_author_email():  # SCRUM-12
     details = make_use_case(coffees, reviews, users).execute(coffee.id)
 
     assert "ana@x.com" not in repr(details)
+
+
+def test_details_include_the_aggregated_rating():  # SCRUM-19
+    coffees, reviews, users, coffee, ana, bia, caio = make_world()
+    add_review(reviews, coffee, ana, 4, day=10)
+    add_review(reviews, coffee, bia, 4, day=11)
+    add_review(reviews, coffee, caio, 5, day=12)
+
+    details = make_use_case(coffees, reviews, users).execute(coffee.id)
+
+    assert details.rating.average == Decimal("4.3")
+    assert details.rating.count == 3
+    assert [b.count for b in details.rating.histogram] == [0, 0, 0, 2, 1]
+
+
+def test_details_of_a_coffee_without_reviews_have_no_average():
+    # SCRUM-19
+    coffees, reviews, users, coffee, *_ = make_world()
+
+    details = make_use_case(coffees, reviews, users).execute(coffee.id)
+
+    assert details.rating.average is None
+    assert details.rating.count == 0
+    assert [b.percentage for b in details.rating.histogram] == [0] * 5

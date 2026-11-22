@@ -4,10 +4,11 @@ from dataclasses import dataclass
 
 from app.presenters.date_presenter import format_date
 from domain.entities.review import RATING_SCALE
-from use_cases.dtos import CoffeeDetailsDTO, ReviewDTO
+from use_cases.dtos import CoffeeDetailsDTO, CoffeeRatingDTO, ReviewDTO
 
 NOT_INFORMED = "Não informado"
 NO_REVIEWS = "Ainda não há avaliações."
+NO_RATING = "Sem avaliações"
 
 
 @dataclass(frozen=True)
@@ -29,6 +30,21 @@ class ReviewView:
 
 
 @dataclass(frozen=True)
+class HistogramRowView:
+    label: str
+    count: int
+    percentage: int
+    percentage_label: str
+
+
+@dataclass(frozen=True)
+class RatingView:
+    summary: str
+    has_reviews: bool
+    histogram: tuple[HistogramRowView, ...]
+
+
+@dataclass(frozen=True)
 class CoffeeDetailsView:
     id: int
     name: str
@@ -44,6 +60,7 @@ class CoffeeDetailsView:
     story: str
     brew_recommendations: tuple[BrewRecommendationView, ...]
     brew_empty_message: str | None
+    rating: RatingView
     reviews: tuple[ReviewView, ...]
     reviews_empty_message: str | None
     user_has_reviewed: bool
@@ -75,10 +92,35 @@ def present_details(details: CoffeeDetailsDTO) -> CoffeeDetailsView:
         brew_empty_message=(
             None if details.brew_recommendations else NOT_INFORMED
         ),
+        rating=_present_rating(details.rating),
         reviews=tuple(_present_review(review) for review in details.reviews),
         reviews_empty_message=None if details.reviews else NO_REVIEWS,
         user_has_reviewed=details.user_has_reviewed,
     )
+
+
+def _present_rating(rating: CoffeeRatingDTO) -> RatingView:
+    return RatingView(
+        summary=_rating_summary(rating),
+        has_reviews=rating.count > 0,
+        histogram=tuple(
+            HistogramRowView(
+                label=f"{bucket.rating}★",
+                count=bucket.count,
+                percentage=bucket.percentage,
+                percentage_label=f"{bucket.percentage}%",
+            )
+            for bucket in reversed(rating.histogram)
+        ),
+    )
+
+
+def _rating_summary(rating: CoffeeRatingDTO) -> str:
+    if rating.average is None:
+        return NO_RATING
+    noun = "avaliação" if rating.count == 1 else "avaliações"
+    average = str(rating.average).replace(".", ",")
+    return f"{average} ★ · {rating.count} {noun}"
 
 
 def _present_review(review: ReviewDTO) -> ReviewView:

@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 from datetime import datetime
+from decimal import Decimal
 
 
 @dataclass(frozen=True)
@@ -42,6 +43,29 @@ class ReviewDTO:
 
 
 @dataclass(frozen=True)
+class RatingBucketDTO:
+    """Faixa do histograma: quantas notas iguais a ``rating``."""
+
+    rating: int
+    count: int
+    percentage: int
+
+
+@dataclass(frozen=True)
+class CoffeeRatingDTO:
+    """Nota agregada de um café.
+
+    ``average`` já vem com 1 casa decimal (meio para cima) e é ``None``
+    quando não há reviews. ``histogram`` tem uma faixa por valor da
+    escala, em ordem crescente.
+    """
+
+    average: Decimal | None
+    count: int
+    histogram: tuple[RatingBucketDTO, ...]
+
+
+@dataclass(frozen=True)
 class CoffeeDetailsDTO:
     """Café completo, como aparece na página dele.
 
@@ -64,6 +88,7 @@ class CoffeeDetailsDTO:
     photo_url: str | None
     story: str | None
     brew_recommendations: tuple[BrewRecommendationDTO, ...]
+    rating: CoffeeRatingDTO
     reviews: tuple[ReviewDTO, ...] = ()
     user_has_reviewed: bool = False
 

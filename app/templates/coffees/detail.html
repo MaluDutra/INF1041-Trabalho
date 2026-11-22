@@ -53,8 +53,21 @@
     {% endif %}
   </section>
 
-  <section class="reviews">
-    <h2>Avaliações</h2>
+  <section class="rating-summary">
+    <h2>Nota agregada</h2>
+    <p class="rating-average">{{ coffee.rating.summary }}</p>
+    <ol class="histogram">
+      {% for row in coffee.rating.histogram %}
+      <li class="histogram-row">
+        <span class="histogram-label">{{ row.label }}</span>
+        <span class="histogram-bar" aria-hidden="true">
+          <span class="histogram-fill" style="width: {{ row.percentage }}%"></span>
+        </span>
+        <span class="histogram-count">{{ row.count }}</span>
+        <span class="histogram-percentage">{{ row.percentage_label }}</span>
+      </li>
+      {% endfor %}
+    </ol>
 
     {% if review_error %}
     <p class="form-error" role="alert">{{ review_error }}</p>
@@ -93,6 +106,10 @@
          href="{{ url_for('reviews.review_form', coffee_id=coffee.id) }}">Avaliar</a>
     </p>
     {% endif %}
+  </section>
+
+  <section class="reviews">
+    <h2>Avaliações</h2>
 
     {% if coffee.reviews_empty_message %}
     <p>{{ coffee.reviews_empty_message }}</p>

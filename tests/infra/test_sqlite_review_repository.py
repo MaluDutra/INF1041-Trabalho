@@ -144,3 +144,29 @@ def test_unique_constraint_lives_in_the_database(db_path, user, coffee):
     with pytest.raises(Exception, match="UNIQUE"):
         connection.execute(sql, (user.id, coffee.id))
     connection.close()
+
+
+def test_list_ratings_by_coffee_returns_only_that_coffee_notes(
+    repository, user, coffee, db_path
+):  # SCRUM-19
+    other_user = SqliteUserRepository(db_path).add(
+        User("Bia", "bia@x.com", "h")
+    )
+    other_coffee = SqliteCoffeeRepository(db_path).add(
+        Coffee(
+            name="Outro",
+            roaster="Café Lá",
+            origin=Origin.PERU,
+            added_at=date(2026, 1, 16),
+        )
+    )
+    repository.add(make_review(user, coffee, rating=5))
+    repository.add(make_review(other_user, coffee, rating=2))
+    repository.add(make_review(user, other_coffee, rating=1))
+
+    assert sorted(repository.list_ratings_by_coffee(coffee.id)) == [2, 5]
+
+
+def test_list_ratings_by_coffee_is_empty_without_reviews(repository, coffee):
+    # SCRUM-19
+    assert repository.list_ratings_by_coffee(coffee.id) == []

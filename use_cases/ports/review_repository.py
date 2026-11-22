@@ -23,3 +23,7 @@ class ReviewRepository(ABC):
     @abstractmethod
     def list_by_coffee(self, coffee_id: int) -> list[Review]:
         """Devolve os reviews do café, sem ordem garantida."""
+
+    @abstractmethod
+    def list_ratings_by_coffee(self, coffee_id: int) -> list[int]:
+        """Devolve as notas dos reviews do café, sem ordem garantida."""

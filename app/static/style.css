@@ -245,3 +245,51 @@ body {
   color: #fff;
   font-size: 0.8rem;
 }
+
+.rating-average {
+  margin: 0.2rem 0 0.8rem;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.histogram {
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.histogram-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.3rem;
+}
+
+.histogram-label {
+  width: 2rem;
+}
+
+.histogram-bar {
+  flex: 1;
+  height: 0.8rem;
+  border-radius: 0.4rem;
+  background: #e3d5c6;
+  overflow: hidden;
+}
+
+.histogram-fill {
+  display: block;
+  height: 100%;
+  background: #4a2c17;
+}
+
+.histogram-count {
+  width: 2rem;
+  text-align: right;
+}
+
+.histogram-percentage {
+  width: 3rem;
+  color: #6b4a33;
+  text-align: right;
+}

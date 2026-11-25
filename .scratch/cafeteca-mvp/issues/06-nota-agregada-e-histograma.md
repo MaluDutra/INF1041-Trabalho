@@ -1,6 +1,6 @@
 # 06: Nota agregada e histograma na página do café
 
-**Status:** ready-for-agent
+**Status:** done
 
 **Jira:** SCRUM-19
 **Histórias da spec:** 22 e 62 a 67 (na página do café)
@@ -30,26 +30,26 @@ ordem: ficha técnica, depois a nota agregada com o histograma e o botão
 
 **Critérios de aceite:**
 
-- [ ] As notas [4, 4, 5, 4] dão média exata 4,25, exibida como "4,3"
+- [x] As notas [4, 4, 5, 4] dão média exata 4,25, exibida como "4,3"
       (meio para cima, não o arredondamento bancário).
-- [ ] DADO QUE o café tem um único review com nota 1, QUANDO a página é
+- [x] DADO QUE o café tem um único review com nota 1, QUANDO a página é
       aberta, ENTÃO mostra "1,0 ★ · 1 avaliação". Não há quantidade
       mínima de reviews.
-- [ ] DADO QUE o café não tem reviews, QUANDO a página é aberta, ENTÃO
+- [x] DADO QUE o café não tem reviews, QUANDO a página é aberta, ENTÃO
       mostra "Sem avaliações", e o histograma não quebra (todas as faixas
       com 0 e 0%, sem divisão por zero).
-- [ ] As notas [5, 5, 4, 1] dão o histograma 5★: 2 (50%), 4★: 1 (25%),
+- [x] As notas [5, 5, 4, 1] dão o histograma 5★: 2 (50%), 4★: 1 (25%),
       3★: 0 (0%), 2★: 0 (0%) e 1★: 1 (25%), exibido de 5★ até 1★.
-- [ ] DADO QUE o usuário acabou de criar um review, QUANDO a página do
+- [x] DADO QUE o usuário acabou de criar um review, QUANDO a página do
       café recarrega, ENTÃO a nota agregada e o histograma já incluem
       essa nota.
-- [ ] A página segue a ordem ficha técnica → nota agregada com histograma
+- [x] A página segue a ordem ficha técnica → nota agregada com histograma
       e botão "Avaliar" → reviews.
-- [ ] Testes de domínio da Nota agregada (arredondamento meio para cima,
+- [x] Testes de domínio da Nota agregada (arredondamento meio para cima,
       histograma, porcentagens e "Sem avaliações") e de `GetCoffeeRating`
       (incluindo o recálculo depois de um `CreateReview`), citando
       SCRUM-19, só com fakes.
-- [ ] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
+- [x] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
       passam.
 
 **Fora deste ticket:** a nota agregada nos cards da busca (ticket 10) e o

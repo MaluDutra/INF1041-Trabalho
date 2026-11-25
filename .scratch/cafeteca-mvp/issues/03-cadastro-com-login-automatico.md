@@ -1,6 +1,6 @@
 # 03: Cadastro com login automático e logout
 
-**Status:** ready-for-agent
+**Status:** done
 
 **Jira:** SCRUM-11
 **Histórias da spec:** 1 a 7, 10, 11 e 12
@@ -29,31 +29,31 @@ aparecem como mensagens claras em português no próprio formulário.
 
 **Critérios de aceite:**
 
-- [ ] DADO QUE os dados são válidos, QUANDO o visitante se cadastra,
+- [x] DADO QUE os dados são válidos, QUANDO o visitante se cadastra,
       ENTÃO a conta é criada e ele já está logado: o cabeçalho mostra o
       nome de exibição e "Sair".
-- [ ] DADO QUE "ana@x.com" já está cadastrado, QUANDO alguém se cadastra
+- [x] DADO QUE "ana@x.com" já está cadastrado, QUANDO alguém se cadastra
       com " Ana@X.com ", ENTÃO vê a mensagem de que o e-mail já está
       cadastrado, com um link para o login, e nenhuma conta nova é
       criada.
-- [ ] "abc1234" (7 caracteres), "abcdefgh" (sem número) e "12345678" (sem
+- [x] "abc1234" (7 caracteres), "abcdefgh" (sem número) e "12345678" (sem
       letra) são recusadas com uma mensagem que explica a regra.
       "abcd1234" é aceita.
-- [ ] Um nome de exibição com 1 caractere ou com 41 caracteres (depois de
+- [x] Um nome de exibição com 1 caractere ou com 41 caracteres (depois de
       tirar os espaços das pontas) é recusado com mensagem. "  Ana  " é
       gravado como "Ana".
-- [ ] Dois usuários podem ter o mesmo nome de exibição.
-- [ ] O banco guarda só o hash da senha. Nenhum caminho do código grava a
+- [x] Dois usuários podem ter o mesmo nome de exibição.
+- [x] O banco guarda só o hash da senha. Nenhum caminho do código grava a
       senha em texto.
-- [ ] Depois de um erro, o formulário mantém o nome e o e-mail
+- [x] Depois de um erro, o formulário mantém o nome e o e-mail
       preenchidos, nunca a senha.
-- [ ] O e-mail não aparece em nenhuma página pública. O cabeçalho mostra
+- [x] O e-mail não aparece em nenhuma página pública. O cabeçalho mostra
       só o nome de exibição.
-- [ ] "Sair" limpa a sessão e volta para a página inicial.
-- [ ] Testes de `RegisterUser` e das invariantes do Usuário, citando
+- [x] "Sair" limpa a sessão e volta para a página inicial.
+- [x] Testes de `RegisterUser` e das invariantes do Usuário, citando
       SCRUM-11, só com fakes: cadastro válido, e-mail duplicado, e-mail
       com maiúsculas, cada regra da senha e os limites do nome.
-- [ ] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
+- [x] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
       passam.
 
 **Fora deste ticket:** login com e-mail e senha e o parâmetro `next`

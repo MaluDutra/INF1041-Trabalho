@@ -1,6 +1,6 @@
 # 02: Página do café com ficha técnica, história e preparo
 
-**Status:** ready-for-agent
+**Status:** done
 
 **Jira:** SCRUM-12
 **Histórias da spec:** 13 a 21, 68 e 70
@@ -33,33 +33,33 @@ encontrado".
 
 **Critérios de aceite:**
 
-- [ ] DADO QUE um café tem todos os atributos, QUANDO o visitante abre a
+- [x] DADO QUE um café tem todos os atributos, QUANDO o visitante abre a
       página dele, ENTÃO vê nome, torrefação, origem, produtor,
       variedade, processo, altitude, torra, notas sensoriais, foto,
       história e recomendações de preparo.
-- [ ] DADO QUE um café não tem produtor, variedade, processo, altitude,
+- [x] DADO QUE um café não tem produtor, variedade, processo, altitude,
       torra, notas sensoriais ou história, QUANDO a página é aberta,
       ENTÃO cada atributo vazio aparece como "Não informado".
-- [ ] Cada recomendação de preparo mostra o método e, quando houver,
+- [x] Cada recomendação de preparo mostra o método e, quando houver,
       proporção, moagem e temperatura. O que faltar aparece como "Não
       informado". Um café sem recomendações mostra "Não informado" na
       seção de preparo.
-- [ ] A foto aparece quando existe. Sem foto, a página continua íntegra.
-- [ ] DADO QUE o id não existe, QUANDO o visitante abre o endereço,
+- [x] A foto aparece quando existe. Sem foto, a página continua íntegra.
+- [x] DADO QUE o id não existe, QUANDO o visitante abre o endereço,
       ENTÃO vê a página "café não encontrado" com status 404, e não um
       erro técnico. `GetCoffeeDetails` lança "não encontrado" e a rota
       traduz.
-- [ ] O domínio rejeita processo, torra ou nota sensorial fora do
+- [x] O domínio rejeita processo, torra ou nota sensorial fora do
       conjunto fechado, notas sensoriais repetidas, altitude zero ou
       negativa e recomendação sem método.
-- [ ] Os cards da página inicial têm link para a página do café.
-- [ ] O seed tem cerca de 20 cafés, cobre todos os valores dos enums,
+- [x] Os cards da página inicial têm link para a página do café.
+- [x] O seed tem cerca de 20 cafés, cobre todos os valores dos enums,
       tem campos vazios em alguns cafés e datas de entrada distintas. Os
       dados passam pelas validações do domínio.
-- [ ] Testes de `GetCoffeeDetails` (café encontrado e não encontrado) e
+- [x] Testes de `GetCoffeeDetails` (café encontrado e não encontrado) e
       das invariantes do Café e da Recomendação de preparo, citando
       SCRUM-12, só com fakes.
-- [ ] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
+- [x] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
       passam.
 
 **Fora deste ticket:** nota agregada, histograma, botão "Avaliar" e

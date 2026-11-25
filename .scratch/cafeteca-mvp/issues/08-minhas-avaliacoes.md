@@ -1,6 +1,6 @@
 # 08: Página "Minhas avaliações"
 
-**Status:** ready-for-agent
+**Status:** done
 
 **Jira:** SCRUM-14
 **Histórias da spec:** 59 a 61
@@ -23,22 +23,22 @@ e volta para ela depois de entrar.
 
 **Critérios de aceite:**
 
-- [ ] DADO QUE o usuário avaliou três cafés em datas diferentes, QUANDO
+- [x] DADO QUE o usuário avaliou três cafés em datas diferentes, QUANDO
       abre "Minhas avaliações", ENTÃO vê os três, do mais recente para o
       mais antigo, cada um com nome do café (com link), nota, texto
       (quando houver), data e ações de editar e excluir.
-- [ ] A página mostra só os reviews do usuário logado, nunca os de outras
+- [x] A página mostra só os reviews do usuário logado, nunca os de outras
       pessoas.
-- [ ] DADO QUE o usuário ainda não avaliou nenhum café, QUANDO abre a
+- [x] DADO QUE o usuário ainda não avaliou nenhum café, QUANDO abre a
       página, ENTÃO vê uma mensagem que convida a explorar o catálogo,
       com link para a página inicial.
-- [ ] DADO QUE o visitante não está logado, QUANDO abre "Minhas
+- [x] DADO QUE o visitante não está logado, QUANDO abre "Minhas
       avaliações", ENTÃO vai para o login e, depois de entrar, volta para
       "Minhas avaliações".
-- [ ] Editar ou excluir a partir desta página leva de volta a "Minhas
+- [x] Editar ou excluir a partir desta página leva de volta a "Minhas
       avaliações", já com a mudança.
-- [ ] Testes de `ListUserReviews`, citando SCRUM-14, só com fakes e
+- [x] Testes de `ListUserReviews`, citando SCRUM-14, só com fakes e
       relógio fixo: ordem, só os reviews do usuário, nome do café em cada
       item e lista vazia.
-- [ ] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
+- [x] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
       passam.

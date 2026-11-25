@@ -1,6 +1,6 @@
 # 13: Usuários e reviews de demonstração no seed
 
-**Status:** ready-for-agent
+**Status:** done
 
 **Jira:** SCRUM-14, SCRUM-19 (demonstração)
 **Histórias da spec:** 69
@@ -25,16 +25,16 @@ estado "Sem avaliações", sem precisar cadastrar nada à mão.
 
 **Critérios de aceite:**
 
-- [ ] Num banco vazio, o comando de inicialização cria o catálogo, os
+- [x] Num banco vazio, o comando de inicialização cria o catálogo, os
       usuários de demonstração e os reviews, sem erro.
-- [ ] Pelo menos um café fica sem avaliações e mostra "Sem avaliações".
-- [ ] Pelo menos um café tem um histograma com três ou mais notas
+- [x] Pelo menos um café fica sem avaliações e mostra "Sem avaliações".
+- [x] Pelo menos um café tem um histograma com três ou mais notas
       diferentes.
-- [ ] Há pelo menos um par de cafés com a mesma média e quantidades
+- [x] Há pelo menos um par de cafés com a mesma média e quantidades
       diferentes, para demonstrar o desempate de "Melhor avaliados".
-- [ ] Há reviews com e sem texto e pelo menos um com o selo "editado".
-- [ ] É possível entrar com as credenciais de demonstração do README e
+- [x] Há reviews com e sem texto e pelo menos um com o selo "editado".
+- [x] É possível entrar com as credenciais de demonstração do README e
       ver os reviews desse usuário.
-- [ ] Nenhuma senha de demonstração fica gravada em texto no banco.
-- [ ] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
+- [x] Nenhuma senha de demonstração fica gravada em texto no banco.
+- [x] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
       passam.

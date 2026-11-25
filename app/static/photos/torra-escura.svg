@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-label="Grãos de café">
+  <rect width="320" height="200" fill="#5c3a22"/>
+  <g fill="#3b2314" stroke="#2b1d14" stroke-opacity="0.25" stroke-width="2">
+    <ellipse cx="90" cy="100" rx="42" ry="58" transform="rotate(-25 90 100)"/>
+    <ellipse cx="170" cy="95" rx="42" ry="58" transform="rotate(15 170 95)"/>
+    <ellipse cx="240" cy="110" rx="42" ry="58" transform="rotate(-10 240 110)"/>
+  </g>
+  <g fill="none" stroke="#2b1d14" stroke-opacity="0.45" stroke-width="4" stroke-linecap="round">
+    <path d="M70 55 Q95 100 110 145"/>
+    <path d="M160 40 Q172 95 178 150"/>
+    <path d="M232 52 Q245 105 248 160"/>
+  </g>
+</svg>

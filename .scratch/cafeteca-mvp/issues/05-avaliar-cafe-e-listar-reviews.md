@@ -1,6 +1,6 @@
 # 05: Avaliar um café e ver os reviews na página do café
 
-**Status:** ready-for-agent
+**Status:** done
 
 **Jira:** SCRUM-14
 **Histórias da spec:** 44 a 50, 55 a 58 e 12 (e-mail nunca público)
@@ -37,36 +37,36 @@ aberto.
 
 **Critérios de aceite:**
 
-- [ ] DADO QUE o usuário está logado e ainda não avaliou o café, QUANDO
+- [x] DADO QUE o usuário está logado e ainda não avaliou o café, QUANDO
       envia a nota 4 sem texto, ENTÃO o review é criado e aparece no topo
       da lista com a nota, o nome de exibição dele e a data no formato
       brasileiro.
-- [ ] Um texto só com espaços é gravado como "sem texto" e o review conta
+- [x] Um texto só com espaços é gravado como "sem texto" e o review conta
       igual a um review com texto.
-- [ ] As notas 0 e 6 são recusadas com mensagem de erro no formulário. Um
+- [x] As notas 0 e 6 são recusadas com mensagem de erro no formulário. Um
       texto com 1000 caracteres é aceito, e um com 1001 é recusado com
       mensagem.
-- [ ] DADO QUE o usuário já avaliou o café, QUANDO abre a página, ENTÃO
+- [x] DADO QUE o usuário já avaliou o café, QUANDO abre a página, ENTÃO
       vê "Editar minha avaliação" no lugar de "Avaliar". Até o ticket 07
       chegar, o botão leva ao review dele no topo da lista.
-- [ ] DADO QUE o usuário já avaliou o café, QUANDO reenvia o formulário de
+- [x] DADO QUE o usuário já avaliou o café, QUANDO reenvia o formulário de
       criação, ENTÃO vê um erro e nenhum segundo review é criado. O fake
       e a restrição única do SQLite garantem isso.
-- [ ] Criar um review num café inexistente responde 404.
-- [ ] DADO QUE o visitante não está logado, QUANDO clica em "Avaliar",
+- [x] Criar um review num café inexistente responde 404.
+- [x] DADO QUE o visitante não está logado, QUANDO clica em "Avaliar",
       ENTÃO vai para o login e, depois de entrar, volta para a página do
       café com o formulário aberto. O mesmo vale para o caminho login →
       "Criar conta" → cadastro.
-- [ ] A lista mostra os reviews do mais recente para o mais antigo, com
+- [x] A lista mostra os reviews do mais recente para o mais antigo, com
       nota, nome de exibição, data e texto (quando houver). O review do
       usuário logado aparece destacado em primeiro. O e-mail do autor não
       aparece em lugar nenhum.
-- [ ] Testes de `CreateReview` (válido, só nota, texto só com espaços,
+- [x] Testes de `CreateReview` (válido, só nota, texto só com espaços,
       notas 0 e 6, 1000 e 1001 caracteres, café inexistente, segundo
       review no mesmo café) e da lista de reviews do `GetCoffeeDetails`
       (ordem e review próprio em primeiro), citando SCRUM-14, só com
       fakes e relógio fixo.
-- [ ] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
+- [x] `ruff check .`, `ruff format --check .`, `lint-imports` e `pytest`
       passam.
 
 **Fora deste ticket:** nota agregada e histograma (ticket 06), editar e

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Cafés - Cafeteca{% endblock %}
+
+{% block content %}
+<h1>Cafés</h1>
+<form class="search-form" method="get" action="{{ url_for('coffees.index') }}" role="search">
+  <label for="q">Buscar por nome, torrefação ou produtor</label>
+  <input type="search" id="q" name="q" value="{{ term }}">
+  <label for="{{ sort_param }}">Ordenar por</label>
+  <select id="{{ sort_param }}" name="{{ sort_param }}">
+    {% for option in sort_options %}
+    <option value="{{ option.id }}"{% if option.selected %} selected{% endif %}>{{ option.label }}</option>
+    {% endfor %}
+  </select>
+  <label for="{{ min_rating_param }}">Nota mínima</label>
+  <select id="{{ min_rating_param }}" name="{{ min_rating_param }}">
+    {% for option in min_rating_options %}
+    <option value="{{ option.value }}"{% if option.selected %} selected{% endif %}>{{ option.label }}</option>
+    {% endfor %}
+  </select>
+  <div class="filters">
+    {% for group in filter_groups %}
+    <fieldset class="filter-group">
+      <legend>{{ group.label }}</legend>
+      {% for option in group.options %}
+      <label class="filter-option"><input type="checkbox" name="{{ group.param }}" value="{{ option.value }}"{% if option.checked %} checked{% endif %}> {{ option.value }}</label>
+      {% endfor %}
+    </fieldset>
+    {% endfor %}
+  </div>
+  <button type="submit">Buscar</button>
+</form>
+{% if warning %}
+<p class="search-warning" role="alert">{{ warning }}</p>
+{% elif coffees %}
+<ul class="coffee-grid">
+  {% for coffee in coffees %}
+  <li class="coffee-card">
+    <h2><a href="{{ url_for('coffees.detail', coffee_id=coffee.id) }}">{{ coffee.name }}</a></h2>
+    <p class="roaster">{{ coffee.roaster }}</p>
+    <p class="origin">{{ coffee.origin }}</p>
+    <p class="rating">{{ coffee.rating_summary }}</p>
+  </li>
+  {% endfor %}
+</ul>
+{% elif term.strip() or has_filters %}
+<section class="no-results">
+  <h2>Nenhum café encontrado</h2>
+  <p>Que tal ajustar a busca?</p>
+  <ul>
+    <li>Confira a grafia do termo.</li>
+    <li>Use um termo mais curto.</li>
+    {% if has_filters %}
+    <li>Remova filtros para ampliar o resultado.</li>
+    {% endif %}
+  </ul>
+</section>
+{% else %}
+<p>O catálogo ainda não tem cafés.</p>
+{% endif %}
+{% endblock %}

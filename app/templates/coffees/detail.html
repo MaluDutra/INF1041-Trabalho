@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}{{ coffee.name }} - Cafeteca{% endblock %}
+
+{% block content %}
+<article class="coffee-detail">
+  <header class="coffee-header">
+    <h1>{{ coffee.name }}</h1>
+    <p class="roaster">{{ coffee.roaster }}</p>
+    <p class="origin">{{ coffee.origin }}</p>
+  </header>
+
+  {% if coffee.photo_url %}
+  <img class="coffee-photo" src="{{ coffee.photo_url }}"
+       alt="Foto do café {{ coffee.name }}">
+  {% endif %}
+
+  <section>
+    <h2>Ficha técnica</h2>
+    <dl class="spec-sheet">
+      <dt>Origem</dt><dd>{{ coffee.origin }}</dd>
+      <dt>Produtor</dt><dd>{{ coffee.producer }}</dd>
+      <dt>Variedade</dt><dd>{{ coffee.variety }}</dd>
+      <dt>Processo</dt><dd>{{ coffee.process }}</dd>
+      <dt>Altitude</dt><dd>{{ coffee.altitude }}</dd>
+      <dt>Torra</dt><dd>{{ coffee.roast }}</dd>
+      <dt>Notas sensoriais</dt><dd>{{ coffee.sensory_notes }}</dd>
+    </dl>
+  </section>
+
+  <section>
+    <h2>História</h2>
+    <p>{{ coffee.story }}</p>
+  </section>
+
+  <section>
+    <h2>Recomendações de preparo</h2>
+    {% if coffee.brew_empty_message %}
+    <p>{{ coffee.brew_empty_message }}</p>
+    {% else %}
+    <ul class="brew-list">
+      {% for brew in coffee.brew_recommendations %}
+      <li class="brew-card">
+        <h3>{{ brew.method }}</h3>
+        <dl class="spec-sheet">
+          <dt>Proporção</dt><dd>{{ brew.ratio }}</dd>
+          <dt>Moagem</dt><dd>{{ brew.grind }}</dd>
+          <dt>Temperatura</dt><dd>{{ brew.temperature }}</dd>
+        </dl>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </section>
+
+  <section class="rating-summary">
+    <h2>Nota agregada</h2>
+    <p class="rating-average">{{ coffee.rating.summary }}</p>
+    <ol class="histogram">
+      {% for row in coffee.rating.histogram %}
+      <li class="histogram-row">
+        <span class="histogram-label">{{ row.label }}</span>
+        <span class="histogram-bar" aria-hidden="true">
+          <span class="histogram-fill" style="width: {{ row.percentage }}%"></span>
+        </span>
+        <span class="histogram-count">{{ row.count }}</span>
+        <span class="histogram-percentage">{{ row.percentage_label }}</span>
+      </li>
+      {% endfor %}
+    </ol>
+
+    {% if review_error %}
+    <p class="form-error" role="alert">{{ review_error }}</p>
+    {% endif %}
+
+    {% if coffee.user_has_reviewed %}
+    {% set own = coffee.own_review %}
+    {% set values = review_form if review_form else
+         {'rating': own.rating|string, 'text': own.text or ''} %}
+    <details id="editar" class="review-form-box"
+             {% if open_edit %}open{% endif %}>
+      <summary class="button">Editar minha avaliação</summary>
+      <form method="post"
+            action="{{ url_for('reviews.edit', coffee_id=coffee.id, review_id=own.id) }}"
+            class="form">
+        {% if next_path %}
+        <input type="hidden" name="next" value="{{ next_path }}">
+        {% endif %}
+        <fieldset class="rating-field">
+          <legend>Nota</legend>
+          {% for value in rating_scale %}
+          <label>
+            <input type="radio" name="rating" value="{{ value }}" required
+                   {% if values.get('rating') == value|string %}checked{% endif %}>
+            {{ value }}
+          </label>
+          {% endfor %}
+        </fieldset>
+
+        <label for="edit-text">Texto (opcional)</label>
+        <textarea id="edit-text" name="text" rows="4">{{ values.get('text', '') }}</textarea>
+        <p class="hint">Até 1000 caracteres.</p>
+
+        <button type="submit">Salvar alterações</button>
+      </form>
+    </details>
+    {% elif current_user %}
+    <details id="avaliar" class="review-form-box"
+             {% if open_form %}open{% endif %}>
+      <summary class="button">Avaliar</summary>
+      <form method="post"
+            action="{{ url_for('reviews.create', coffee_id=coffee.id) }}"
+            class="form">
+        <fieldset class="rating-field">
+          <legend>Nota</legend>
+          {% for value in rating_scale %}
+          <label>
+            <input type="radio" name="rating" value="{{ value }}" required
+                   {% if review_form.get('rating') == value|string %}checked{% endif %}>
+            {{ value }}
+          </label>
+          {% endfor %}
+        </fieldset>
+
+        <label for="review-text">Texto (opcional)</label>
+        <textarea id="review-text" name="text" rows="4">{{ review_form.get('text', '') }}</textarea>
+        <p class="hint">Até 1000 caracteres.</p>
+
+        <button type="submit">Publicar avaliação</button>
+      </form>
+    </details>
+    {% else %}
+    <p>
+      <a class="button"
+         href="{{ url_for('reviews.review_form', coffee_id=coffee.id) }}">Avaliar</a>
+    </p>
+    {% endif %}
+  </section>
+
+  <section class="reviews">
+    <h2>Avaliações</h2>
+
+    {% if coffee.reviews_empty_message %}
+    <p>{{ coffee.reviews_empty_message }}</p>
+    {% else %}
+    <ul class="review-list">
+      {% for review in coffee.reviews %}
+      <li class="review{% if review.is_own %} review-own{% endif %}"
+          {% if review.is_own %}id="minha-avaliacao"{% endif %}>
+        <p class="review-meta">
+          <span class="review-rating">{{ review.rating_label }}</span>
+          <span class="review-author">{{ review.author_name }}</span>
+          <span class="review-date">{{ review.date }}</span>
+          {% if review.edited %}<span class="review-edited">editado</span>{% endif %}
+          {% if review.is_own %}<span class="review-badge">Sua avaliação</span>{% endif %}
+        </p>
+        {% if review.text %}
+        <p class="review-text">{{ review.text }}</p>
+        {% endif %}
+        {% if review.is_own %}
+        <details class="review-delete">
+          <summary class="button button-danger">Excluir</summary>
+          <form method="post"
+                action="{{ url_for('reviews.delete', coffee_id=coffee.id, review_id=review.id) }}">
+            <p>Excluir sua avaliação é definitivo e não pode ser desfeito.</p>
+            <button type="submit" class="button-danger">Confirmar exclusão</button>
+            <p class="hint">Para cancelar, feche este aviso clicando em "Excluir" de novo.</p>
+          </form>
+        </details>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </section>
+
+  <p><a href="{{ url_for('coffees.index') }}">Voltar ao catálogo</a></p>
+</article>
+{% endblock %}

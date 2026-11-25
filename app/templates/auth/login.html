@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Entrar - Cafeteca{% endblock %}
+
+{% block content %}
+<h1>Entrar</h1>
+{% if error %}
+<p class="form-error" role="alert">{{ error }}</p>
+{% endif %}
+<form method="post" action="{{ url_for('auth.login') }}" class="form">
+  {% if next_url %}
+  <input type="hidden" name="next" value="{{ next_url }}">
+  {% endif %}
+  <label for="email">E-mail</label>
+  <input id="email" name="email" type="email" required
+         value="{{ form.get('email', '') }}">
+
+  <label for="password">Senha</label>
+  <input id="password" name="password" type="password" required>
+
+  <button type="submit">Entrar</button>
+</form>
+<p class="hint">
+  Ainda não tem conta?
+  <a href="{{ url_for('auth.signup_form', next=next_url) }}">Criar conta</a>
+</p>
+{% endblock %}

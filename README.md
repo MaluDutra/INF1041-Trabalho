@@ -272,27 +272,19 @@ repositório:
    Claude, com testes escritos primeiro a partir dos critérios de aceite
    (DADO QUE / QUANDO / ENTÃO), código mínimo para passar e refatoração. Cada
    issue é um commit (`... (issue NN)`) com a linha `Co-Authored-By: Claude`.
-   <!-- CONFIRMAR: o grupo usou subagentes do Claude (um por issue) para
-   implementar, ou conduziu as issues na sessão principal? Ajustar este
-   item conforme foi na prática. -->
+   As issues foram implementadas por subagentes do Claude, seguindo a ordem
+   do grafo de dependências.
 6. **Verificação automática.** Em cada issue, pytest, `ruff check`,
    `ruff format --check` e `lint-imports` precisam passar, localmente
    (pre-commit) e no CI. As ferramentas, e não o Claude, decidem se o resultado está de
    acordo com o PEP-8 e com a Clean Architecture.
 7. **Revisão humana.** O resultado de cada etapa é lido e aprovado por uma
    pessoa do grupo antes de seguir: a spec e as decisões do grilling, os
-   critérios de aceite das issues, o diff de cada commit e a integração na
-   `main` por pull request, com o CI verde.
-   <!-- CONFIRMAR: o grupo precisa confirmar quem revisou o quê (por
-   exemplo, revisão de cada commit e dos pull requests pelos integrantes) e
-   se o fluxo de pull request com pelo menos 1 revisor foi seguido. O
-   histórico de commits mostra a maior parte dos commits de um único
-   autor; ajustar esta etapa à realidade. -->
-8. **Revisão de código assistida.** Ao final de cada etapa o fluxo prevê a
+   critérios de aceite das issues e a integração na `main` por pull request,
+   com o CI verde.
+8. **Revisão de código assistida.** Ao final de cada etapa foi usada a
    skill `pocock-code-review`, que compara o código com as convenções do
    projeto (Standards) e com a issue (Spec).
-   <!-- CONFIRMAR: o grupo precisa confirmar se a revisão assistida foi de
-   fato executada em cada issue. -->
 
 O que a IA não decide: o escopo (cabe ao grupo e ao Jira), as regras de
 negócio em aberto (a escala de notas virou o ADR 0001 por decisão do grupo no
@@ -300,6 +292,3 @@ grilling) e a aprovação final. A IA acelerou o esqueleto, os testes a partir
 dos critérios de aceite e a documentação; as decisões de arquitetura ficaram
 registradas em ADRs, e a regra de dependência é cobrada por ferramenta, não
 por confiança.
-
-<!-- CONFIRMAR: se o grupo quiser, listar aqui nominalmente quem do grupo
-fez o grilling e quem revisou cada etapa. -->
